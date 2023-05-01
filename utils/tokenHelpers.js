@@ -23,6 +23,9 @@ export const saveJwtToCookie = (user, res) => {
     .cookie("jwt", jwt, {
         maxAge: COOKIE_EXPIRES,
         httpOnly: NODE_ENV === "development" ? true : false
+    })
+    .json({
+        success: true
     });
 
 }
