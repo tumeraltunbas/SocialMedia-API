@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
-import { validatePassword } from "../utils/inputHelpers.js";
+import { validateInputs, validatePassword } from "../utils/inputHelpers.js";
 import CustomError from "../services/error/CustomError.js";
 import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
 import bcrypt from "bcryptjs";
@@ -167,6 +167,53 @@ export const sendEmail = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Email verification link successfully sent"
+    });
+
+});
+
+export const changePassword = expressAsyncHandler(async(req, res, next) => {
+
+    const {
+        oldPassword, 
+        newPassword, 
+        newPasswordRepeat
+    } = req.body;
+    
+    
+    if(validateInputs(oldPassword, newPassword, newPasswordRepeat)){
+        return next(new CustomError(400, "Please fill all the inputs"));
+    }
+    
+    const user = await User.findOne({
+        where: {
+            id: req.user.id,
+            isActive: true
+        },
+        attributes: [
+            "id",
+            "password",
+            "lastPasswordChangedAt"
+        ]
+    });
+
+    if(newPassword !== newPasswordRepeat){
+        return next(new CustomError(400, "Passwords do not match"));
+    }
+
+    if(!bcrypt.compareSync(oldPassword, user.password)){
+        return next(new CustomError(400, "Old password is invalid"));
+    }
+
+    user.password = newPassword;
+    user.lastPasswordChangedAt = Date.now();
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your password has been changed"
     });
 
 });
