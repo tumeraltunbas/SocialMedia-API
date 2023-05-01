@@ -4,3 +4,16 @@ export const validatePassword = (password) => {
 
     return regex.test(password);
 }
+
+export const validateInputs = (...inputs) => {
+
+    for(let input of inputs){
+
+        if(!input){
+            return false;
+        }
+
+    }
+
+    return true;
+}
