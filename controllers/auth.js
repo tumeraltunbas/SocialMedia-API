@@ -5,6 +5,7 @@ import CustomError from "../services/error/CustomError.js";
 import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
 import bcrypt from "bcryptjs";
 import { saveJwtToCookie } from "../utils/tokenHelpers.js";
+import { Op } from "sequelize";
 
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
@@ -97,5 +98,43 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
     }
 
     saveJwtToCookie(user, res);
+
+});
+
+export const verifyEmail = expressAsyncHandler(async(req, res, next) => {
+
+    const {emailVerificationToken} = req.query;
+
+    const user = await User.findOne({
+        where: {
+            [Op.and]: [
+                {emailVerificationToken: emailVerificationToken},
+                {emailVerificationTokenExpires: {[Op.gt]: Date.now()}}
+            ]
+        },
+        attributes: [
+            "id", 
+            "emailVerificationToken", 
+            "emailVerificationTokenExpires", 
+            "isEmailVerified"
+        ]
+    });
+
+    if(!user){
+        return next(new CustomError(400, "Your email verification token wrong or expired"));
+    }
+
+    user.emailVerificationToken = null;
+    user.emailVerificationTokenExpires = null;
+    user.isEmailVerified = true;
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your email has been verified"
+    });
 
 });
