@@ -55,7 +55,7 @@ const User = db.define("User", {
         allowNull: false
     },
     dateOfBirth: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false
     },
     phoneNumber: {
@@ -112,7 +112,7 @@ const User = db.define("User", {
         type: DataTypes.DATE,
         defaultValue: null
     },
-    lastPasswordChangetAt: {
+    lastPasswordChangedAt: {
         type: DataTypes.DATE,
         defaultValue: null
     },
@@ -158,7 +158,7 @@ User.prototype.createJwt = function(){
     };
 
     const token = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: new Date(Date.now() + Number(JWT_EXPIRES))
+        expiresIn: JWT_EXPIRES
     });
 
     return token;
