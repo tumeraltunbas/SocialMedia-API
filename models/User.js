@@ -4,6 +4,17 @@ import bcrypt from "bcryptjs";
 
 const User = db.define("User", {
 
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+            len: {
+                args: [3, 20],
+                msg: "Username must be between 3-20 characters"
+            }
+        },  
+    },
     firstName: {
         type: DataTypes.STRING,
         allowNull: false,
