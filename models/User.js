@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../services/database/db.services.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const User = db.define("User", {
 
@@ -144,6 +145,25 @@ User.addHook("beforeSave", function(user){
     }
 
 });
+
+
+//Model Methods
+User.prototype.createJwt = function(){
+
+    const {JWT_SECRET, JWT_EXPIRES} = process.env;
+
+    const payload = {
+        id: this.id,
+        username: this.username
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, {
+        expiresIn: new Date(Date.now() + Number(JWT_EXPIRES))
+    });
+
+    return token;
+
+}
 
 await User.sync();
 export default User;
