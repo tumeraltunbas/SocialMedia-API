@@ -18,6 +18,7 @@
     "express-async-handler": "^1.2.0",
     "mysql2": "^3.2.4",
     "nodemailer": "^6.9.1",
+    "randomstring": "^1.2.3",
     "sequelize": "^6.31.1"
   },
   "devDependencies": {
