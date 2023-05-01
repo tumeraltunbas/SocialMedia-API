@@ -9,7 +9,7 @@ router.post("/sign/up", signUp);
 router.post("/sign/in", checkUserExists, signIn);
 router.get("/email/verify", verifyEmail);
 router.post("/email/send", checkUserExists, sendEmail);
-router.post("/password/change", isAuth, changePassword);
+router.put("/password/change", isAuth, changePassword);
 
 
 export default router;

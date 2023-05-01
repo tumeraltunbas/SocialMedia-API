@@ -59,7 +59,8 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
             "password", 
             "isTwoFactorEnabled", 
             "isBlocked", 
-            "isActive"
+            "isActive",
+            "isEmailVerified"
         ]
     });
 
