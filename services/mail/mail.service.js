@@ -33,7 +33,7 @@ export const sendEmailVerificationMail = expressAsyncHandler(async(user) =>{
 
     await user.save();
 
-    const link = `${DOMAIN}/api/email/verify?emailVerificationToken=${emailVerificationToken}`;
+    const link = `${DOMAIN}/api/auth/email/verify?emailVerificationToken=${emailVerificationToken}`;
 
     const mailOptions = {
         from: SMTP_USER,
