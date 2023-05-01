@@ -133,3 +133,6 @@ User.addHook("beforeSave", function(user){
     }
 
 });
+
+await User.sync();
+export default User;
