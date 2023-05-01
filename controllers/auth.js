@@ -8,6 +8,7 @@ import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
     const {
+        username,
         firstName,
         lastName,
         email,
@@ -22,13 +23,14 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
     }
 
     const user = await User.create({
+            username: username,
             firstName: firstName,
             lastName: lastName,
             email:email,
             password: password,
             gender: gender,
             dateOfBirth: dateOfBirth
-    });
+        });
 
     sendEmailVerificationMail(user);
 
