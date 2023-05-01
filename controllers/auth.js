@@ -3,6 +3,8 @@ import User from "../models/User.js";
 import { validatePassword } from "../utils/inputHelpers.js";
 import CustomError from "../services/error/CustomError.js";
 import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
+import bcrypt from "bcryptjs";
+import { saveJwtToCookie } from "../utils/tokenHelpers.js";
 
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
@@ -40,5 +42,60 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
         success: true,
         message: "Email verification link sent"
     })
+
+});
+
+export const signIn = expressAsyncHandler(async(req, res, next) => {
+
+    const {username, password} = req.body;
+    
+    const user = await User.findOne({
+        where: {
+            username: username,
+        },
+        attributes: [
+            "id",
+            "password", 
+            "isTwoFactorEnabled", 
+            "isBlocked", 
+            "isActive"
+        ]
+    });
+
+    if(!bcrypt.compareSync(password, user.password)){
+
+        return next(new CustomError(400, "Check your credentials"));
+    }
+    
+    if(user.isBlocked === false && user.isActive === false){
+
+        user.isActive = true;
+        await user.save();
+    }
+
+    if(user.isTwoFactorEnabled){
+
+        return res
+        .status(200)
+        .json({
+            success: true,
+            username: username 
+        });
+
+    }
+
+    if(user.isEmailVerified != true){       
+
+        await user.reload({attributes: [
+            "email",
+            "emailVerificationToken",
+            "emailVerificationTokenExpires",
+        ]});
+        
+        sendEmailVerificationMail(user);
+        return next(new CustomError(400, "You need to verify your email"));        
+    }
+
+    saveJwtToCookie(user, res);
 
 });
