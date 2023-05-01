@@ -38,7 +38,7 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
     sendEmailVerificationMail(user);
 
     return res
-    .status(200)
+    .status(201)
     .json({
         success: true,
         message: "Email verification link sent"
@@ -135,6 +135,38 @@ export const verifyEmail = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your email has been verified"
+    });
+
+});
+
+export const sendEmail = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            username : username
+        },
+        attributes: [
+            "id",
+            "email",
+            "emailVerificationToken",
+            "emailVerificationTokenExpires",
+            "isEmailVerified"
+        ]
+    });
+
+    if(user.isEmailVerified){
+        return next(new CustomError(400, "Your email has alredy been verified"));
+    }
+
+    sendEmailVerificationMail(user);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Email verification link successfully sent"
     });
 
 });
