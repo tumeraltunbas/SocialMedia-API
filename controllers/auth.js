@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import { createToken, saveJwtToCookie } from "../utils/tokenHelpers.js";
 import { Op } from "sequelize";
 import moment from "moment";
+import speakeasy from "speakeasy";
+import qrcode from "qrcode";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -343,6 +345,32 @@ export const resetPassword = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your password has been changed"
+    });
+
+});
+
+export const enable2FA = expressAsyncHandler(async(req, res, next) => {
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        }
+    });
+
+    const twoFactorSecret = speakeasy.generateSecret({length: 15, name: "SocialMedia-API"});
+
+    const qrCode = await qrcode.toDataURL(twoFactorSecret.otpauth_url);
+    const key = twoFactorSecret.otpauth_url.split("=")[1];
+    
+    user.twoFactorSecret = twoFactorSecret.base32;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        qrCode: qrCode,
+        key: key
     });
 
 });

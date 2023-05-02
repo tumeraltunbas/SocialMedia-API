@@ -21,8 +21,10 @@
     "moment": "^2.29.4",
     "mysql2": "^3.2.4",
     "nodemailer": "^6.9.1",
+    "qrcode": "^1.5.3",
     "randomstring": "^1.2.3",
-    "sequelize": "^6.31.1"
+    "sequelize": "^6.31.1",
+    "speakeasy": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
