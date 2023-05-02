@@ -73,3 +73,26 @@ export const refreshBackupCodes = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const deleteBackupCodes = expressAsyncHandler(async(req, res, next) => {
+
+    const backupCodes = await BackupCode.findAll({
+        include: {
+            model: User,
+            where: {id: req.user.id}
+        }
+    });
+
+    backupCodes.forEach(async(backupCode) => {
+
+        await backupCode.destroy();
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Backup codes has been deleted"
+    });
+
+});
