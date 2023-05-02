@@ -433,3 +433,46 @@ export const validate2FA = expressAsyncHandler(async(req, res, next) => {
     saveJwtToCookie(user,res);
 
 });
+
+export const disable2FA = expressAsyncHandler(async(req, res, next) => {
+
+    const {code, password} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: ["id", "twoFactorSecret", "isTwoFactorEnabled", "password"]
+    });
+
+    if(!validateInputs(code, password)){
+        return next(new CustomError(400, "Please provide all inputs"));
+    }
+
+    if(!bcrypt.compareSync(password, user.password)){
+        return next(new CustomError(400, "The password you entered is invalid"));
+    }
+
+    const verify = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: "base32",
+        token: code
+    });
+
+    if(!verify){
+        return next(new CustomError(400, "The code you entered is wrong"));
+    }
+
+    user.twoFactorSecret = null;
+    user.isTwoFactorEnabled = false;
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "2FA has been disabled"
+    });
+
+});
