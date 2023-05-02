@@ -102,6 +102,18 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const logout = expressAsyncHandler(async(req, res, next) => {
+
+    res
+    .status(200)
+    .clearCookie("jwt", {expires: Date.now()})
+    .json({
+        success: true,
+        message: "Logout successfull"
+    });
+
+});
+
 export const verifyEmail = expressAsyncHandler(async(req, res, next) => {
 
     const {emailVerificationToken} = req.query;
