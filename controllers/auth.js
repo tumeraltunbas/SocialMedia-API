@@ -9,6 +9,7 @@ import { Op } from "sequelize";
 import moment from "moment";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
+import BackupCode from "../models/BackupCode.js";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -436,7 +437,23 @@ export const validate2FA = expressAsyncHandler(async(req, res, next) => {
     });
 
     if(!verify){
-        return next(new CustomError(400, "The code you entered is wrong"));
+
+        const backupCode = await BackupCode.findOne({
+            where: {
+                backupCode: code
+            },
+            include: {
+                model: User,
+                where: { id: user.id }
+            },
+        });
+
+        if(!backupCode){
+            return next(new CustomError(400, "The code you entered is wrong"));
+        }
+
+        await backupCode.destroy();
+
     }
 
     saveJwtToCookie(user,res);
