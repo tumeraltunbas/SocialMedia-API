@@ -2,6 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import BackupCode from "../models/BackupCode.js";
 import User from "../models/User.js";
 import { generateOtp } from "../utils/tokenHelpers.js";
+import CustomError from "../services/error/CustomError.js";
 
 export const createBackupCodes = expressAsyncHandler(async(req, res, next) => {
 
@@ -48,6 +49,10 @@ export const refreshBackupCodes = expressAsyncHandler(async(req, res, next) => {
             where: { id: user.id }
         }
     });
+
+    if(backupCodes.length === 0){
+        return next(new CustomError(400, "You do not have backup codes to refresh"));
+    }
 
     backupCodes.forEach(async(backupCode) => {
         await backupCode.destroy();
