@@ -2,11 +2,11 @@ import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import { validateInputs, validatePassword } from "../utils/inputHelpers.js";
 import CustomError from "../services/error/CustomError.js";
-import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
+import { sendEmailVerificationMail, sendMail } from "../services/mail/mail.service.js";
 import bcrypt from "bcryptjs";
 import { saveJwtToCookie } from "../utils/tokenHelpers.js";
 import { Op } from "sequelize";
-
+import moment from "moment";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -177,11 +177,11 @@ export const changePassword = expressAsyncHandler(async(req, res, next) => {
     const {
         oldPassword, 
         newPassword, 
-        newPasswordRepeat
+        passwordRepeat
     } = req.body;
     
     
-    if(validateInputs(oldPassword, newPassword, newPasswordRepeat)){
+    if(!validateInputs(oldPassword, newPassword, passwordRepeat)){
         return next(new CustomError(400, "Please fill all the inputs"));
     }
     
@@ -192,12 +192,13 @@ export const changePassword = expressAsyncHandler(async(req, res, next) => {
         },
         attributes: [
             "id",
+            "email",
             "password",
             "lastPasswordChangedAt"
         ]
     });
 
-    if(newPassword !== newPasswordRepeat){
+    if(newPassword !== passwordRepeat){
         return next(new CustomError(400, "Passwords do not match"));
     }
 
@@ -209,6 +210,15 @@ export const changePassword = expressAsyncHandler(async(req, res, next) => {
     user.lastPasswordChangedAt = Date.now();
 
     await user.save();
+
+    const mailOptions = {
+        from: process.env.SMTP_USER,
+        to: user.email,
+        subject: "Your password has been changed",
+        html: `<p>Your password has been changed at ${moment(user.lastPasswordChangedAt).format("DD MM YYYY hh:mm:ss")}. If you did not do this, please contact us.</p>`
+    }
+
+    sendMail(mailOptions);
 
     return res
     .status(200)
