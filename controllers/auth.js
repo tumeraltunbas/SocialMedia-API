@@ -106,7 +106,7 @@ export const logout = expressAsyncHandler(async(req, res, next) => {
 
     res
     .status(200)
-    .clearCookie("jwt", {expires: Date.now()})
+    .clearCookie("jwt")
     .json({
         success: true,
         message: "Logout successfull"
