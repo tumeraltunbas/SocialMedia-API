@@ -408,3 +408,28 @@ export const verify2FA = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const validate2FA = expressAsyncHandler(async(req, res, next) => {
+
+    const {username, code} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            username: username
+        },
+        attributes: ["id", "twoFactorSecret"]
+    })
+
+    const verify = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: "base32",
+        token: code
+    });
+
+    if(!verify){
+        return next(new CustomError(400, "The code you entered is wrong"));
+    }
+
+    saveJwtToCookie(user,res);
+
+});
