@@ -276,3 +276,61 @@ export const forgotPassword = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const resetPassword = expressAsyncHandler(async(req, res, next) => {
+
+    const {resetPasswordToken} = req.query;
+
+    const {password, passwordRepeat} = req.body;
+
+    if(!resetPasswordToken){
+        return next(new CustomError(400, "Reset password token can not be null"));
+    }
+
+    const user = await User.findOne({
+        where: {
+            [Op.and]: [
+                {resetPasswordToken: resetPasswordToken},
+                {resetPasswordTokenExpires: {[Op.gt]: Date.now()}}
+            ],
+        },
+        attributes: [
+            "id",
+            "resetPasswordToken",
+            "resetPasswordTokenExpires",
+            "password",
+            "lastPasswordChangedAt"
+        ]
+    });
+
+    if(!user){
+        return next(new CustomError(400, "Your reset password token is wrong or expired"));
+    }
+
+    if(password !== passwordRepeat){
+        return next(new CustomError(400, "Passwords do not match"));
+    }
+
+    if(!validatePassword(password)){
+        return next(new CustomError(400, "Your password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number"));
+    }
+
+    if(bcrypt.compareSync(password, user.password)){
+        return next(new CustomError(400, "Your new password can not be same with old one"));
+    }
+
+    user.resetPasswordToken = null;
+    user.resetPasswordTokenExpires = null;
+    user.password = password;
+    user.lastPasswordChangedAt = Date.now();
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your password has been changed"
+    });
+
+});
