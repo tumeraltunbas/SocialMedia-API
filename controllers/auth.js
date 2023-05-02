@@ -354,7 +354,8 @@ export const enable2FA = expressAsyncHandler(async(req, res, next) => {
     const user = await User.findOne({
         where: {
             id: req.user.id
-        }
+        },
+        attributes: ["id", "twoFactorSecret"]
     });
 
     const twoFactorSecret = speakeasy.generateSecret({length: 15, name: "SocialMedia-API"});
@@ -371,6 +372,39 @@ export const enable2FA = expressAsyncHandler(async(req, res, next) => {
         success: true,
         qrCode: qrCode,
         key: key
+    });
+
+});
+
+export const verify2FA = expressAsyncHandler(async(req, res, next) => {
+
+    const {code} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: ["id", "twoFactorSecret", "isTwoFactorEnabled"]
+    });
+
+    const verify = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: "base32",
+        token: code,
+    });
+
+    if(!verify){
+        return next(new CustomError(400, "The code you entered is wrong"));
+    }
+
+    user.isTwoFactorEnabled = true;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "2FA has been enabled"
     });
 
 });
