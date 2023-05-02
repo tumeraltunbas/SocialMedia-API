@@ -236,6 +236,7 @@ export const changePassword = expressAsyncHandler(async(req, res, next) => {
 
     return res
     .status(200)
+    .clearCookie(jwt)
     .json({
         success: true,
         message: "Your password has been changed"
@@ -481,6 +482,39 @@ export const disable2FA = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "2FA has been disabled"
+    });
+
+});
+
+export const deactivateAccount = expressAsyncHandler(async(req, res, next) => {
+
+    const {password} = req.body;
+
+    if(!password){
+        return next(new CustomError(400, "Please provide a password"));
+    }
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id,
+            isActive: true
+        },
+        attributes: ["id", "password", "isActive"]
+    });
+
+    if(!bcrypt.compareSync(password, user.password)){
+        return next(new CustomError(400, "Password is invalid"));
+    }
+
+    user.isActive = false;
+    await user.save();
+
+    return res
+    .status(200)
+    .clearCookie(jwt)
+    .json({
+        success: true,
+        message: "Your account has been deactivated"
     });
 
 });
