@@ -4,7 +4,7 @@ import { validateInputs, validatePassword } from "../utils/inputHelpers.js";
 import CustomError from "../services/error/CustomError.js";
 import { sendEmailVerificationMail, sendMail } from "../services/mail/mail.service.js";
 import bcrypt from "bcryptjs";
-import { saveJwtToCookie } from "../utils/tokenHelpers.js";
+import { createToken, saveJwtToCookie } from "../utils/tokenHelpers.js";
 import { Op } from "sequelize";
 import moment from "moment";
 
@@ -225,6 +225,54 @@ export const changePassword = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your password has been changed"
+    });
+
+});
+
+export const forgotPassword = expressAsyncHandler(async(req, res, next) => {
+
+    const key = req.body.email || req.body.username;
+    const {DOMAIN, RESET_PASSWORD_TOKEN_EXPIRES, SMTP_USER} = process.env; 
+
+    const user = await User.findOne({
+        where: {
+            [Op.or]: [
+                {username: key},
+                {email: key}
+            ],
+            isActive: true
+        },
+        attributes: [
+            "id", 
+            "resetPasswordToken", 
+            "resetPasswordTokenExpires",
+            "email"
+        ]
+    });
+
+    const token = createToken();
+    
+    user.resetPasswordToken = token;
+    user.resetPasswordTokenExpires = new Date(Date.now() + Number(RESET_PASSWORD_TOKEN_EXPIRES));
+    
+    await user.save();
+
+    const link = `${DOMAIN}/api/auth/password/reset?resetPasswordToken=${token}`;
+
+    const mailOptions = {
+        from: SMTP_USER,
+        to: user.email,
+        subject: "Reset Password",
+        html: `<p>Your reset password <a href='${link}'>link</a>. This link is valid for 30 minutes</p>`
+    };
+
+    sendMail(mailOptions);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Reset password link successfully sent"
     });
 
 });
