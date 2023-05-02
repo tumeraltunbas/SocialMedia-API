@@ -380,6 +380,10 @@ export const verify2FA = expressAsyncHandler(async(req, res, next) => {
 
     const {code} = req.body;
 
+    if(!code){
+        return next(new CustomError(400, "Please provide a code"));
+    }
+
     const user = await User.findOne({
         where: {
             id: req.user.id
@@ -412,6 +416,10 @@ export const verify2FA = expressAsyncHandler(async(req, res, next) => {
 export const validate2FA = expressAsyncHandler(async(req, res, next) => {
 
     const {username, code} = req.body;
+
+    if(!validateInputs(username,code)){
+        return next(new CustomError(400, "Please provide all inputs"));
+    }
 
     const user = await User.findOne({
         where: {
