@@ -22,6 +22,7 @@
     "mysql2": "^3.2.4",
     "nodemailer": "^6.9.1",
     "qrcode": "^1.5.3",
+    "random-int": "^3.0.0",
     "randomstring": "^1.2.3",
     "sequelize": "^6.31.1",
     "speakeasy": "^2.0.0"

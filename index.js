@@ -4,6 +4,7 @@ import "./services/database/db.services.js"; //database connection
 import { errorHandler } from "./middlewares/error/errorHandler.js";
 import routes from "./routes/index.js";
 import cookieParser from "cookie-parser";
+import "./models/index.js";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();

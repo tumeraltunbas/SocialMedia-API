@@ -1,5 +1,6 @@
 import { generate } from "randomstring";
 import bcrypt from "bcryptjs";
+import randomInteger from "random-int";
 
 export const createToken = () => {
 
@@ -28,4 +29,10 @@ export const saveJwtToCookie = (user, res) => {
         success: true
     });
 
+}
+
+export const generateOtp = () => {
+
+    const otp = randomInteger(10000000, 99999999).toString();
+    return otp;
 }
