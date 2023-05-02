@@ -2,7 +2,6 @@ import { Router } from "express";
 import { signUp, signIn, logout, verifyEmail, sendEmail, changePassword, forgotPassword, resetPassword, enable2FA, verify2FA, validate2FA, disable2FA, deactivateAccount } from "../controllers/auth.js";
 import { checkUserExists } from "../middlewares/database/db.query.js";
 import { isAuth } from "../middlewares/auth/auth.js";
-import passport from "passport";
 
 const router = Router();
 
