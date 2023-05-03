@@ -2,6 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import CustomError from "../services/error/CustomError.js";
 import { sendPhoneCodeService } from "../services/sms/sms.service.js";
+import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -118,6 +119,37 @@ export const changePhoneNumber = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your phone number has been updated"
+    });
+
+});
+
+export const changeEmail = expressAsyncHandler(async(req, res, next) => {
+
+    const {email} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: [
+            "id",
+            "email",
+            "emailVerificationToken",
+            "emailVerificationTokenExpires",
+            "isEmailVerified"
+        ]
+    });
+
+    user.email = email;
+    user.isEmailVerified = false;
+
+    sendEmailVerificationMail(user);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your email has been changed"
     });
 
 });
