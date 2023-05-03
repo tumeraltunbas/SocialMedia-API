@@ -17,3 +17,11 @@ export const validateInputs = (...inputs) => {
 
     return true;
 }
+
+export const capitalize = (word) => {
+
+    const lower = word.toLowerCase();
+    const capitalize = lower.charAt(0).toUpperCase() + lower.slice(1);
+
+    return capitalize;
+}
