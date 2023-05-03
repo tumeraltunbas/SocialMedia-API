@@ -10,6 +10,7 @@ import moment from "moment";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import BackupCode from "../models/BackupCode.js";
+import { sendPhoneCodeService } from "../services/sms/sms.service.js";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -499,6 +500,32 @@ export const disable2FA = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "2FA has been disabled"
+    });
+
+});
+
+export const sendPhoneCode = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            username: username,
+        },
+        attributes: ["id", "phoneNumber", "phoneCode", "phoneCodeExpires"]
+    });
+
+    if(!user.phoneNumber){
+        return next(new CustomError(400, "User does not have a phone number"));
+    }
+
+    await sendPhoneCodeService(user);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Phone code has been successfully sent"
     });
 
 });

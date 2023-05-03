@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signUp, signIn, logout, verifyEmail, sendEmail, changePassword, forgotPassword, resetPassword, enable2FA, verify2FA, validate2FA, disable2FA, verifyPhone, deactivateAccount } from "../controllers/auth.js";
+import { signUp, signIn, logout, verifyEmail, sendEmail, changePassword, forgotPassword, resetPassword, enable2FA, verify2FA, validate2FA, disable2FA, sendPhoneCode, verifyPhone, deactivateAccount } from "../controllers/auth.js";
 import { checkUserExists } from "../middlewares/database/db.query.js";
 import { isAuth } from "../middlewares/auth/auth.js";
 
@@ -17,6 +17,7 @@ router.get("/2fa/enable", isAuth, enable2FA);
 router.post("/2fa/verify", isAuth, verify2FA);
 router.post("/2fa/validate", checkUserExists, validate2FA);
 router.put("/2fa/disable", isAuth, disable2FA);
+router.post("/phone/send", sendPhoneCode);
 router.post("/phone/verify", isAuth, verifyPhone);
 router.post("/deactivate", isAuth, deactivateAccount);
 
