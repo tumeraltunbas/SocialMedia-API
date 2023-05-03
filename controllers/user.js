@@ -127,6 +127,10 @@ export const changeEmail = expressAsyncHandler(async(req, res, next) => {
 
     const {email} = req.body;
 
+    if(!email){
+        return next(new CustomError(400, "Please provide an email"));
+    }
+    
     const user = await User.findOne({
         where: {
             id: req.user.id
