@@ -16,7 +16,7 @@ export const sendSms = expressAsyncHandler(async(phoneNumber, text) => {
    
 });
 
-export const sendPhoneCode = expressAsyncHandler(async(user) => {
+export const sendPhoneCodeService = expressAsyncHandler(async(user) => {
 
     const {PHONE_CODE_EXPIRES} = process.env;
 
