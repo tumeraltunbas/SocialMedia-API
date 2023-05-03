@@ -58,6 +58,9 @@ const User = db.define("User", {
         type: DataTypes.DATEONLY,
         allowNull: false
     },
+    profileImageUrl: {
+        type: DataTypes.STRING
+    },
     phoneNumber: {
         type: DataTypes.STRING,
         unique: true,
