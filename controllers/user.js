@@ -86,3 +86,38 @@ export const addPhoneNumber = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const changePhoneNumber = expressAsyncHandler(async(req, res, next) => {
+
+    const {phoneNumber} = req.body;
+
+    if(!phoneNumber){
+        return next(new CustomError(400, "Please provide a phone number"));
+    }
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: [
+            "id",
+            "phoneNumber",
+            "phoneCode",
+            "phoneCodeExpires",
+            "isPhoneVerified"
+        ]
+    });
+
+    user.phoneNumber = phoneNumber;
+    user.isPhoneVerified = false;
+
+    sendPhoneCodeService(user);
+    
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your phone number has been updated"
+    });
+
+});
