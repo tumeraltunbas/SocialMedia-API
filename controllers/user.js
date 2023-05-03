@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import CustomError from "../services/error/CustomError.js";
-import { sendPhoneCode } from "../services/sms/sms.service.js";
+import { sendPhoneCodeService } from "../services/sms/sms.service.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -76,7 +76,7 @@ export const addPhoneNumber = expressAsyncHandler(async(req, res, next) => {
     });
 
     user.phoneNumber = phoneNumber;
-    await sendPhoneCode(user);
+    await sendPhoneCodeService(user);
 
     return res
     .status(200)
