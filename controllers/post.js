@@ -54,3 +54,26 @@ export const updatePost = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const hidePost = expressAsyncHandler(async(req, res, next) => {
+
+    const {postId} = req.params;
+
+    const post = await Post.findOne({
+        where: {
+            id: postId
+        },
+        attributes: ["id", "isVisible"]
+    });
+
+    post.isVisible = false;
+    await post.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your post has been hid"
+    });
+
+});
