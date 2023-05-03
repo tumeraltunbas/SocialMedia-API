@@ -26,3 +26,31 @@ export const createPost = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const updatePost = expressAsyncHandler(async(req, res, next) => {
+
+    const {content} = req.body;
+    const {postId} = req.params;
+    
+    const post = await Post.findOne({
+        where: {
+            id: postId
+        },
+        attributes: ["id", "content"]
+    });
+
+    if(!post.content){
+        return next(new CustomError(400, "Post does not have a content, therefore you can not edit this post"));
+    }
+
+    post.content = content;
+    await post.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Post has been updated"
+    });
+
+});
