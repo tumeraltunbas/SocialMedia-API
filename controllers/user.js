@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import CustomError from "../services/error/CustomError.js";
 import { sendPhoneCodeService } from "../services/sms/sms.service.js";
 import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
+import { capitalize } from "../utils/inputHelpers.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -53,6 +54,16 @@ export const updateProfile = expressAsyncHandler(async(req, res, next) => {
             "dateOfBirth",
         ]
     });
+
+    if(informations.firstName){
+
+        informations.firstName = capitalize(informations.firstName);
+    }
+
+    if(informations.lastName){
+        
+        informations.lastName = capitalize(informations.lastName);
+    }
 
     await user.update({...informations});
 
