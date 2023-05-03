@@ -69,6 +69,10 @@ export const addPhoneNumber = expressAsyncHandler(async(req, res, next) => {
 
     const {phoneNumber} = req.body;
 
+    if(!phoneNumber){
+        return next(new CustomError(400, "Please provide a phone number"));
+    }
+
     const user = await User.findOne({
         where: {
             id: req.user.id
