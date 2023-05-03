@@ -33,3 +33,32 @@ export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const updateProfile = expressAsyncHandler(async(req, res, next) => {
+
+    const informations = req.body;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: [
+            "id",
+            "username",
+            "firstName",
+            "lastName",
+            "gender",
+            "dateOfBirth",
+        ]
+    });
+
+    await user.update({...informations});
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your profile has been updated"
+    });
+
+});
