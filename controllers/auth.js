@@ -11,6 +11,7 @@ import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import BackupCode from "../models/BackupCode.js";
 import { sendPhoneCodeService } from "../services/sms/sms.service.js";
+import { capitalize } from "../utils/inputHelpers.js";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -31,8 +32,8 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
 
     const user = await User.create({
             username: username,
-            firstName: firstName,
-            lastName: lastName,
+            firstName: capitalize(firstName),
+            lastName: capitalize(lastName),
             email:email,
             password: password,
             gender: gender,
