@@ -512,7 +512,12 @@ export const sendPhoneCode = expressAsyncHandler(async(req, res, next) => {
         where: {
             username: username,
         },
-        attributes: ["id", "phoneNumber", "phoneCode", "phoneCodeExpires"]
+        attributes: [
+            "id", 
+            "phoneNumber", 
+            "phoneCode", 
+            "phoneCodeExpires"
+        ]
     });
 
     if(!user.phoneNumber){
@@ -542,7 +547,12 @@ export const verifyPhone = expressAsyncHandler(async(req, res, next) => {
                 { phoneCodeExpires: { [Op.gt]: Date.now() }}
             ]
         },
-        attributes: ["id", "phoneCode", "phoneCodeExpires", "isPhoneVerified"]
+        attributes: [
+            "id", 
+            "phoneCode", 
+            "phoneCodeExpires", 
+            "isPhoneVerified"
+        ]
     });
 
     if(!user){
@@ -561,6 +571,39 @@ export const verifyPhone = expressAsyncHandler(async(req, res, next) => {
         success: true,
         message: "Your phone number has been verified"
     });
+
+});
+
+export const validatePhone = expressAsyncHandler(async(req, res, next) => {
+
+    const {username, code} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            username: username,
+            [Op.and]: [
+                { phoneCode: code },
+                { phoneCodeExpires: { [Op.gte] : Date.now() }}
+            ]
+        },
+        attributes: [
+            "id", 
+            "phoneCode", 
+            "phoneCodeExpires"
+        ]
+    });
+
+    if(!user){
+        return next(new CustomError(400, "Your phone code wrong or expired"));
+    }
+
+    user.phoneCode = null;
+    user.phoneCodeExpires = null;
+
+    await user.save();
+
+    saveJwtToCookie(user, res);
+
 
 });
 
