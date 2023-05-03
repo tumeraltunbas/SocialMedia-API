@@ -1,6 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import CustomError from "../services/error/CustomError.js";
+import { sendPhoneCode } from "../services/sms/sms.service.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -59,6 +60,29 @@ export const updateProfile = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your profile has been updated"
+    });
+
+});
+
+export const addPhoneNumber = expressAsyncHandler(async(req, res, next) => {
+
+    const {phoneNumber} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: ["id", "phoneNumber", "phoneCode", "phoneCodeExpires"]
+    });
+
+    user.phoneNumber = phoneNumber;
+    await sendPhoneCode(user);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your phone code has been added"
     });
 
 });
