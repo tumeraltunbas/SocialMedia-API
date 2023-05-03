@@ -503,6 +503,40 @@ export const disable2FA = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const verifyPhone = expressAsyncHandler(async(req, res, next) => {
+
+    const {code} = req.body;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id,
+            [Op.and] : [
+                { phoneCode: code },
+                { phoneCodeExpires: { [Op.gt]: Date.now() }}
+            ]
+        },
+        attributes: ["id", "phoneCode", "phoneCodeExpires", "isPhoneVerified"]
+    });
+
+    if(!user){
+        return next(new CustomError(400, "Your phone code wrong or expired"));
+    }
+
+    user.phoneCode = null;
+    user.phoneCodeExpires = null;
+    user.isPhoneVerified = true;
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your phone number has been verified"
+    });
+
+});
+
 export const deactivateAccount = expressAsyncHandler(async(req, res, next) => {
 
     const {password} = req.body;
