@@ -27,7 +27,8 @@
     "random-int": "^3.0.0",
     "randomstring": "^1.2.3",
     "sequelize": "^6.31.1",
-    "speakeasy": "^2.0.0"
+    "speakeasy": "^2.0.0",
+    "twilio": "^4.10.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
