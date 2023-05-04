@@ -2,6 +2,8 @@ import { DataTypes } from "sequelize";
 import db from "../services/database/db.services.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Post from "./Post.js";
+import Like from "./Like.js";
 
 const User = db.define("User", {
 
@@ -145,6 +147,37 @@ User.addHook("beforeSave", function(user){
         const hash = bcrypt.hashSync(user.password, salt);
 
         user.password = hash;
+    }
+
+});
+
+User.addHook("beforeSave", async function(user){
+
+    if(user.changed("isActive")){
+
+        await Post.update(
+            {
+                isVisible: user.isActive 
+            },
+            { 
+                where: {
+                    UserId: user.id,
+                    isHidByUser: false
+                } 
+            }
+        );
+
+        await Like.update(
+            {
+                isVisible: user.isActive
+            },
+            {
+                where: {
+                    UserId: user.id,
+                }
+            }
+        );
+
     }
 
 });
