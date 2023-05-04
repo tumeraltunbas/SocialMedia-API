@@ -11,6 +11,10 @@ const Like = db.define("Like", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    isVisible: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
