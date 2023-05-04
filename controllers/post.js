@@ -67,6 +67,7 @@ export const hidePost = expressAsyncHandler(async(req, res, next) => {
     });
 
     post.isVisible = false;
+    post.isHidByUser = true;
     await post.save();
 
     return res
