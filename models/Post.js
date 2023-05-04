@@ -17,6 +17,10 @@ const Post = db.define("Post", {
         type: DataTypes.BOOLEAN,
         defaultValue: true
     },
+    isHidByUser: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
