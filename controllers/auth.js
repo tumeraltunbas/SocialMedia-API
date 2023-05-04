@@ -633,7 +633,7 @@ export const deactivateAccount = expressAsyncHandler(async(req, res, next) => {
 
     return res
     .status(200)
-    .clearCookie(jwt)
+    .clearCookie("jwt")
     .json({
         success: true,
         message: "Your account has been deactivated"
