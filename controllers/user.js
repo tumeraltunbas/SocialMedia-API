@@ -4,6 +4,8 @@ import CustomError from "../services/error/CustomError.js";
 import { sendPhoneCodeService } from "../services/sms/sms.service.js";
 import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
 import { capitalize } from "../utils/inputHelpers.js";
+import Post from "../models/Post.js";
+import Like from "../models/Like.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -169,6 +171,32 @@ export const changeEmail = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your email has been changed"
+    });
+
+});
+
+export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
+
+    const posts = await Post.findAll({
+        where: { 
+            isVisible: true 
+        },
+        include: {
+            model: Like,
+            where: { 
+                UserId: req.user.id 
+            },
+            attributes: []
+        },
+        attributes: { exclude: ["isVisible"] }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        posts: posts,
+        count: posts.length
     });
 
 });
