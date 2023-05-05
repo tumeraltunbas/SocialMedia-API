@@ -28,3 +28,27 @@ export const createComment = expressAsyncHandler(async(req, res, next) => {
     })
 
 });
+
+export const updateComment = expressAsyncHandler(async(req, res, next) => {
+
+    const {commentId} = req.params;
+    const {content} = req.body;
+
+    const comment = await Comment.findOne({
+        where: {
+            id: commentId
+        },
+        attributes: ["id", "content"]
+    });
+
+    comment.content = content;
+    await comment.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Comment has been updated"
+    });
+
+});
