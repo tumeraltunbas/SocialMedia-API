@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAuth } from "../middlewares/auth/auth.js";
 import upload from "../services/file/upload.service.js";
-import { uploadProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, changeEmail, getLikedPosts, followUser, unfollowUser, getProfile } from "../controllers/user.js";
+import { uploadProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, changeEmail, getLikedPosts, followUser, unfollowUser, getProfile, getFollowings } from "../controllers/user.js";
 import { checkUserExists } from "../middlewares/database/db.query.js";
 
 const router = Router();
@@ -15,6 +15,7 @@ router.put("/email/change", isAuth, changeEmail);
 router.get("/likes", isAuth, getLikedPosts);
 router.get("/follow/:userId", [isAuth, checkUserExists], followUser);
 router.get("/unfollow/:userId", [isAuth, checkUserExists], unfollowUser);
-router.get("/profile/:username", checkUserExists, getProfile);
+router.get("/profile/:username", [isAuth, checkUserExists], getProfile);
+router.get("/profile/:username/following", [isAuth, checkUserExists], getFollowings);
 
 export default router;

@@ -321,3 +321,33 @@ export const getProfile = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const getFollowings = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            username: username
+        },
+        attributes: ["id"]
+    });
+
+    const followings = await user.getFollowing({
+        attributes: [
+            "id",
+            "username",
+            "firstName",
+            "lastName",
+            "profileImageUrl"
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        followings: followings
+    });
+
+});
