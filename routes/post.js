@@ -4,6 +4,7 @@ import { createPost, updatePost, hidePost } from "../controllers/post.js";
 import upload from "../services/file/upload.service.js";
 import { checkPostExists } from "../middlewares/database/db.query.js";
 import likeRoutes from "./like.js";
+import commentRoutes from "./comment.js";
 
 const router = Router();
 
@@ -13,5 +14,7 @@ router.put("/:postId/hide", [isAuth, checkPostExists], hidePost);
 
 //Like
 router.use("/like/:postId", likeRoutes);
+//Comment
+router.use("/comment/:postId", commentRoutes);
 
 export default router;
