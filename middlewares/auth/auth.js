@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import expressAsyncHandler from "express-async-handler";
 import Comment from "../../models/Comment.js";
 import CustomError from "../../services/error/CustomError.js";
+import Post from "../../models/Post.js";
 
 export const isAuth = (req, res, next) => {
 
@@ -23,6 +24,26 @@ export const isAuth = (req, res, next) => {
     });
 
 }
+
+export const getPostOwnerAccess = expressAsyncHandler(async(req, res, next) => {
+
+    const {postId} = req.params;
+
+    const post = await Post.findOne({
+        where: {
+            id: postId,
+            isVisible: true
+        },
+        attributes: ["id", "UserId"]
+    });
+
+    if(post.UserId != req.user.id){
+        return next(new CustomError(403, "You are not owner of this post"));
+    }
+
+    next();
+
+});
 
 export const getCommentOwnerAccess = expressAsyncHandler(async(req, res, next) => {
 
