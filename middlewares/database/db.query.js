@@ -4,6 +4,7 @@ import CustomError from "../../services/error/CustomError.js";
 import { Op } from "sequelize";
 import Post from "../../models/Post.js";
 import Follow from "../../models/Follow.js";
+import Comment from "../../models/Comment.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
@@ -73,6 +74,28 @@ export const checkUserFollowing = expressAsyncHandler(async(req, res, next) => {
 
     if(!follow){
         return next(new CustomError(404, "You are not following this user"));
+    }
+
+    next();
+
+});
+
+export const checkCommentExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {commentId} = req.params;
+    const {postId} = req.params;
+
+    const comment = await Comment.findOne({
+        where: {
+            id: commentId,
+            PostId: postId,
+            isVisible:  true
+        },
+        attributes: ["id"]
+    });
+
+    if(!comment){
+        return next(new CustomError(404), "Comment not found");
     }
 
     next();
