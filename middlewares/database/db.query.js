@@ -6,13 +6,14 @@ import Post from "../../models/Post.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
-    const key = req.body.username || req.body.email;
+    const key = req.body.username || req.body.email || req.params.userId;
 
     const user = await User.findOne({
         where: {
             [Op.or]: [
                 {username: key},
-                {email: key}
+                {email: key},
+                {id: key}
             ]
         },
         attributes: ["id"]
