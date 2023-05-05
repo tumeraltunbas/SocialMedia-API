@@ -52,3 +52,29 @@ export const updateComment = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const hideComment = expressAsyncHandler(async(req, res, next) => {
+
+    const {commentId} = req.params;
+
+    const comment = await Comment.findOne({
+        where: {
+            id: commentId,
+            isVisible: true,
+        },
+        attributes: ["id", "isVisible", "isHidByUser"]
+    });
+
+    comment.isVisible = false;
+    comment.isHidByUser = true;
+
+    await comment.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Comment has been hid"
+    });
+
+});
