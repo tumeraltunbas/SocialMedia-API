@@ -4,6 +4,7 @@ import db from "../services/database/db.services.js";
 import Post from "./Post.js";
 import Like from "./Like.js";
 import Follow from "./Follow.js";
+import Comment from "./Comment.js";
 
 //User and BackupCode many to many
 User.belongsToMany(BackupCode, { through: "UserBackupCodes" });
@@ -28,5 +29,13 @@ User.belongsToMany(User, { foreignKey: "followerId", through: Follow, as: "follo
 Follow.belongsTo(User, { foreignKey: 'followerId' });
 Follow.belongsTo(User, { foreignKey: 'followingId' });
 
+//User and Comment one to many
+User.hasMany(Comment, { foreignKey: "UserId" });
+Comment.belongsTo(User, { onDelete: "CASCADE" });
+
+//Post and Comment ont to many
+Post.hasMany(Comment, { foreignKey: "UserId" });
+Comment.belongsTo(Post, { onDelete: "CASCADE" });
+
 await db.sync();
-export {User, BackupCode, Post, Like, Follow};
+export {User, BackupCode, Post, Like, Follow, Comment};
