@@ -1,6 +1,8 @@
 import expressAsyncHandler from "express-async-handler";
 import Post from "../models/Post.js";
 import CustomError from "../services/error/CustomError.js";
+import Comment from "../models/Comment.js";
+import Like from "../models/Like.js";
 
 export const createPost = expressAsyncHandler(async(req, res, next) => {
 
@@ -75,6 +77,38 @@ export const hidePost = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your post has been hid"
+    });
+
+});
+
+export const getPostById = expressAsyncHandler(async(req, res, next) => {
+
+    const {postId} = req.params;
+
+    const post = await Post.findOne({
+        where: {
+            id: postId
+        },
+        include: [
+            {
+                model: Comment,
+                attributes: ["id", "content", "imageUrl"]
+            },
+            {
+                model: Like,
+            }
+        ],
+        attributes: ["id", "content", "imageUrl"]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        post: post,
+        comments: post.Comments,
+        commentLength: post.Comments.length,
+        likeCount: post.Likes.length
     });
 
 });
