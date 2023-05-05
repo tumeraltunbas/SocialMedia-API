@@ -3,6 +3,12 @@ import { DataTypes } from "sequelize";
 
 const Comment = db.define("Comment", {
 
+    content: {
+        type: DataTypes.STRING,
+    },
+    imageUrl: {
+        type: DataTypes.STRING,
+    },
     PostId: {
         type: DataTypes.INTEGER,
         allowNull: false
