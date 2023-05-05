@@ -1,9 +1,10 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import db from "../services/database/db.services.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Post from "./Post.js";
 import Like from "./Like.js";
+import Follow from "./Follow.js";
 
 const User = db.define("User", {
 
@@ -174,6 +175,32 @@ User.addHook("beforeSave", async function(user){
             {
                 where: {
                     UserId: user.id,
+                }
+            }
+        );
+
+        await Comment.update(
+            {
+                isVisible: user.isActive
+            },
+            {
+                where: {
+                    UserId: user.id,
+                }
+            }
+        );
+
+        await Follow.update(
+            {
+                isVisible: user.isActive
+            },
+            {
+                where: {
+                    [Op.or]: [
+                        {followingId: user.id},
+                        {followerId: user.id}
+                    ]
+                    
                 }
             }
         );
