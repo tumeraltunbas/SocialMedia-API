@@ -6,6 +6,7 @@ import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
 import { capitalize } from "../utils/inputHelpers.js";
 import Post from "../models/Post.js";
 import Like from "../models/Like.js";
+import Follow from "../models/Follow.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -197,6 +198,43 @@ export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
         success: true,
         posts: posts,
         count: posts.length
+    });
+
+});
+
+export const followUser = expressAsyncHandler(async(req, res, next) => {
+
+    const {userId} = req.params;
+
+    if(userId === req.user.id){
+        return next(new CustomError(400, "You can not follow yourself"));
+    }
+
+    const user = await User.findOne({
+        where: {
+            id: userId
+        },
+        attributes: ["id"]
+    });
+
+    const follow = await Follow.findOne({
+        where: {
+            followerId: req.user.id,
+            followingId: userId
+        },
+        attributes: ["id"]
+    });
+
+    if(follow){
+        return next(new CustomError(400, "You are already following this user"));
+    }
+
+    await user.addFollower(req.user.id);
+
+    return res
+    .status(200)
+    .json({
+        success: true, 
     });
 
 });
