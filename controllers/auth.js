@@ -30,6 +30,10 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "Your password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number"));
     }
 
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)){
+        return next(new CustomError(400, "Invalid birthdate format"));
+    }
+
     const user = await User.create({
             username: username,
             firstName: capitalize(firstName),
@@ -38,7 +42,7 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
             password: password,
             gender: gender,
             dateOfBirth: dateOfBirth
-        });
+    });
 
     sendEmailVerificationMail(user);
 
