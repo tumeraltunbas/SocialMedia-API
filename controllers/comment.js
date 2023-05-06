@@ -1,6 +1,41 @@
 import expressAsyncHandler from "express-async-handler";
 import Comment from "../models/Comment.js";
 import CustomError from "../services/error/CustomError.js";
+import User from "../models/User.js";
+
+export const getCommentsByPostId = expressAsyncHandler(async(req, res, next) => {
+
+    const {postId} = req.params;
+
+    const comments = await Comment.findAll({
+        where: {
+            PostId: postId
+        },
+        include: {
+            model: User,
+            attributes: [
+                "id",
+                "firstName",
+                "lastName",
+                "profileImageUrl"
+            ]
+        },
+        attributes: [
+            "id",
+            "content",
+            "imageUrl",
+            "createdAt"
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        comments: comments
+    });
+
+});
 
 export const createComment = expressAsyncHandler(async(req, res, next) => {
 
