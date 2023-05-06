@@ -462,3 +462,28 @@ export const unblockUser = expressAsyncHandler(async(req, res, next) => {
 
 
 });
+
+export const getBlocks = expressAsyncHandler(async(req, res, next) => {
+
+    const blocks = await Block.findAll({
+        where: {
+            BlockedId: req.user.id
+        },
+        include: {
+            model: User,
+            attributes: [
+                "id",
+                "firstName",
+                "lastName"
+            ]
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        blocks: blocks
+    });
+
+});
