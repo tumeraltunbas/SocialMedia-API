@@ -5,6 +5,7 @@ import { Op } from "sequelize";
 import Post from "../../models/Post.js";
 import Follow from "../../models/Follow.js";
 import Comment from "../../models/Comment.js";
+import Block from "../../models/Block.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
@@ -100,4 +101,31 @@ export const checkCommentExists = expressAsyncHandler(async(req, res, next) => {
 
     next();
 
+});
+
+export const checkUserBlocked = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            username: username
+        },
+        attributes: ["id"]
+    });
+
+    const block = await Block.findOne({
+        where: {
+            BlockerId: req.user.id,
+            BlockedId: user.id
+        },
+        attributes: ["id"]
+    });
+
+    if(block){
+        return next(new CustomError(400, "You can not access this route because you blocked that user"));
+    }
+
+    next();
+    
 });
