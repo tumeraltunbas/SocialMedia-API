@@ -7,6 +7,7 @@ import { capitalize } from "../utils/inputHelpers.js";
 import Post from "../models/Post.js";
 import Like from "../models/Like.js";
 import Follow from "../models/Follow.js";
+import Block from "../models/Block.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -380,4 +381,45 @@ export const getFollowers = expressAsyncHandler(async(req, res, next) => {
         followings: followers
     });
 
-})
+});
+
+export const blockUser = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            username: username
+        },
+        attributes: ["id"]
+    });
+
+    if(user.id === req.user.id){
+        return next(new CustomError(400, "You can not block yourself"));
+    }
+    
+    await user.addBlocked(req.user.id);
+
+    //Unfollow each other
+    await Follow.destroy({
+        where: {
+            FollowerId: req.user.id,
+            FollowingId: user.id
+        }
+    });
+
+    await Follow.destroy({
+        where: {
+            FollowerId: user.id,
+            FollowingId: req.user.id
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "User has been blocked"
+    });
+
+});
