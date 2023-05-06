@@ -8,6 +8,7 @@ import Post from "../models/Post.js";
 import Like from "../models/Like.js";
 import Follow from "../models/Follow.js";
 import Block from "../models/Block.js";
+import { Op } from "sequelize";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -421,5 +422,43 @@ export const blockUser = expressAsyncHandler(async(req, res, next) => {
         success: true,
         message: "User has been blocked"
     });
+
+});
+
+export const unblockUser = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            username: username
+        },
+        attributes: ["id"]
+    });
+
+    if(user.id === req.user.id){
+        return next(new CustomError(400, "You can not unblock yourself"));
+    }
+
+    const block = await Block.findOne({
+        where: {
+            BlockerId: req.user.id,
+            BlockedId: user.id
+        },
+    });
+
+    if(!block){
+        return next(new CustomError(400, "You already did not block this user"));
+    }
+
+    await block.destroy();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "User has been unblocked"
+    });
+
 
 });
