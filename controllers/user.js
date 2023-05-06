@@ -9,6 +9,7 @@ import Like from "../models/Like.js";
 import Follow from "../models/Follow.js";
 import Block from "../models/Block.js";
 import { Op } from "sequelize";
+import bcrypt from "bcryptjs";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -484,6 +485,42 @@ export const getBlocks = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         blocks: blocks
+    });
+
+});
+
+export const unblockAll = expressAsyncHandler(async(req, res, next) => {
+
+    const {password} = req.body;
+
+    if(!password){
+        return next(new CustomError(400, "Please provide a password"));
+    }
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: ["id", "password"]
+    });
+
+    //Password validation
+    if(!bcrypt.compareSync(password, user.password)){
+        
+        return next(new CustomError(400, "Your password is invalid"));
+    }
+
+    await Block.destroy({
+        where: {
+            BlockerId: req.user.id
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "All blocks have been unblocked"
     });
 
 });

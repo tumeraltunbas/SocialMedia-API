@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAuth } from "../middlewares/auth/auth.js";
 import upload from "../services/file/upload.service.js";
-import { uploadProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, changeEmail, getLikedPosts, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks } from "../controllers/user.js";
+import { uploadProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, changeEmail, getLikedPosts, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll } from "../controllers/user.js";
 import { checkUserExists, checkUserFollowing } from "../middlewares/database/db.query.js";
 
 const router = Router();
@@ -20,5 +20,6 @@ router.get("/profile/:username/followers", [isAuth, checkUserExists, checkUserFo
 router.get("/profile/:username/block", [isAuth, checkUserExists], blockUser);
 router.get("/profile/:username/unblock", [isAuth, checkUserExists], unblockUser);
 router.get("/blocks", isAuth, getBlocks);
+router.post("/unblock/all", isAuth, unblockAll);
 
 export default router;
