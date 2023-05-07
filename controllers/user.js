@@ -43,6 +43,27 @@ export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const removeProfileImage = expressAsyncHandler(async(req, res, next) => {
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: ["id", "profileImage"]
+    });
+
+    user.profileImage = "profile.jpg";
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your profile image has been removed"
+    });
+
+});
+
 export const updateProfile = expressAsyncHandler(async(req, res, next) => {
 
     const informations = req.body;
