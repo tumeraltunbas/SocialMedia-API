@@ -62,7 +62,8 @@ const User = db.define("User", {
         allowNull: false
     },
     profileImageUrl: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        defaultValue: "profile.jpg"
     },
     phoneNumber: {
         type: DataTypes.STRING,
