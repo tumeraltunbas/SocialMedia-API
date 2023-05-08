@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import Post from "./Post.js";
 import Like from "./Like.js";
 import Follow from "./Follow.js";
+import Comment from "./Comment.js";
 
 const User = db.define("User", {
 
