@@ -1,6 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
+import CustomError from "../services/error/CustomError.js";
 
 export const getAllUsers = expressAsyncHandler(async(req, res, next) => {
 
@@ -93,6 +94,39 @@ export const blockUserByAdmin = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "User has been blocked by admin"
+    });
+
+});
+
+export const unblockUserByAdmin = expressAsyncHandler(async(req, res, next) => {
+
+    const {userId} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            id: userId
+        },
+        attributes: [
+            "id", 
+            "isBlocked",
+            "isActive"
+        ]
+    });
+
+    if(user.isBlocked !== true){
+        return next(new CustomError(400, "This user is not already blocked by admin"));
+    }
+
+    user.isBlocked = false;
+    user.isActive = true;
+
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "User has been unblocked by admin"
     });
 
 });
