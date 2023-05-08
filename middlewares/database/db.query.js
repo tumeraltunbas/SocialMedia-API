@@ -105,11 +105,14 @@ export const checkCommentExists = expressAsyncHandler(async(req, res, next) => {
 
 export const checkUserBlocked = expressAsyncHandler(async(req, res, next) => {
 
-    const {username} = req.params;
+    const key = req.params.username || req.params.userId;
 
     const user = await User.findOne({
         where: {
-            username: username
+            [Op.or]: [
+                { id: key },
+                { username: key }
+            ]
         },
         attributes: ["id"]
     });
