@@ -67,3 +67,32 @@ export const getAllPosts = expressAsyncHandler(async(req, res, next) => {
 
 
 });
+
+export const blockUserByAdmin = expressAsyncHandler(async(req, res, next) => {
+
+    const {userId} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            id: userId
+        },
+        attributes: [
+            "id", 
+            "isBlocked",
+            "isActive"
+        ]
+    });
+
+    user.isBlocked = true;
+    user.isActive = false;
+    
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "User has been blocked by admin"
+    });
+
+});
