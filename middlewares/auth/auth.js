@@ -3,6 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import Comment from "../../models/Comment.js";
 import CustomError from "../../services/error/CustomError.js";
 import Post from "../../models/Post.js";
+import User from "../../models/User.js";
 
 export const isAuth = (req, res, next) => {
 
@@ -58,6 +59,23 @@ export const getCommentOwnerAccess = expressAsyncHandler(async(req, res, next) =
 
     if(comment.UserId != req.user.id){
         return next(new CustomError(403, "You are not owner of this comment"));
+    }
+
+    next();
+
+});
+
+export const getAdminAccess = expressAsyncHandler(async(req, res, next) => {
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: ["id", "isAdmin"]
+    });
+
+    if(user.isAdmin != true){
+        return next(new CustomError(403, "Only admins can access this route"));
     }
 
     next();
