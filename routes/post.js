@@ -5,10 +5,11 @@ import upload from "../services/file/upload.service.js";
 import { checkPostExists, checkPostBelongsToBlockedUser } from "../middlewares/database/db.query.js";
 import likeRoutes from "./like.js";
 import commentRoutes from "./comment.js";
+import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
 
 const router = Router();
 
-router.get("/feed", isAuth, getFeed);
+router.get("/feed", [isAuth, postQueryMiddleware], getFeed);
 
 router.post("/", [isAuth, upload.single("file")], createPost);
 router.put("/:postId", [isAuth, checkPostExists, getPostOwnerAccess], updatePost);

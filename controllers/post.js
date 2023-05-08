@@ -116,6 +116,8 @@ export const getPostById = expressAsyncHandler(async(req, res, next) => {
 
 export const getFeed = expressAsyncHandler(async(req, res, next) => {
 
+    const {where, startIndex, limit, pagination} = req.postQuery;
+
     const user = await User.findOne({
         where: {
             id: req.user.id
@@ -131,11 +133,10 @@ export const getFeed = expressAsyncHandler(async(req, res, next) => {
         followingIds.push(followings[i].dataValues.id);
     }
 
+    where.UserId = followingIds;
+
     const posts = await Post.findAll({
-        where: {
-            UserId: followingIds,
-            isVisible: true
-        },
+        where: where,
         include: {
             model: User,
             attributes: [
@@ -147,14 +148,17 @@ export const getFeed = expressAsyncHandler(async(req, res, next) => {
             ]  
         },
         attributes: ["id", "content", "imageUrl", "createdAt"],
-        order: [["createdAt", "desc"]]
+        order: [["createdAt", "desc"]],
+        offset: startIndex,
+        limit: limit
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        posts: posts
+        posts: posts,
+        pagination: pagination
     });
 
 });
