@@ -84,6 +84,10 @@ export const blockUserByAdmin = expressAsyncHandler(async(req, res, next) => {
         ]
     });
 
+    if(user.isBlocked === true){
+        return next(new CustomError(400, "This user is already blocked by admin"));
+    }
+
     user.isBlocked = true;
     user.isActive = false;
     
