@@ -230,7 +230,7 @@ export const followUser = expressAsyncHandler(async(req, res, next) => {
 
     const {userId} = req.params;
 
-    if(userId === req.user.id){
+    if(Number(userId) === req.user.id){
         return next(new CustomError(400, "You can not follow yourself"));
     }
 
