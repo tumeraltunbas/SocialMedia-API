@@ -46,3 +46,17 @@ export const paginationHelper = expressAsyncHandler(async(req, model) => {
     return {startIndex, limit, pagination};
 
 });
+
+export const userSearchHelper = (req) => {
+
+    const {search} = req.query;
+
+    let where = {}
+
+    if(search){
+        where.content = {[Op.like]: `%${search}%`}
+    }
+
+    return where;
+
+}
