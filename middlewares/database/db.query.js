@@ -129,3 +129,30 @@ export const checkUserBlocked = expressAsyncHandler(async(req, res, next) => {
     next();
     
 });
+
+export const checkPostBelongsToBlockedUser = expressAsyncHandler(async(req, res, next) => {
+
+    const {postId} = req.params;
+
+    const post = await Post.findOne({
+        where: {
+            id: postId
+        },
+        attributes: ["id", "UserId"]
+    });
+
+    const block = await Block.findOne({
+        where: {
+            BlockerId: req.user.id,
+            BlockedId: post.UserId
+        },
+        attributes: ["id", "BlockedId"]
+    });
+
+    if(block){
+        return next(new CustomError(400, "You can not access this route because you blocked that user"));
+    }
+
+    next();
+
+});
