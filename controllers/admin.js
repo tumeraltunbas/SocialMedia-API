@@ -134,3 +134,29 @@ export const unblockUserByAdmin = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const assignAdminRole = expressAsyncHandler(async(req, res, next) => {
+
+    const {userId} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            id: userId,
+        },
+        attributes: [
+            "id",
+            "isAdmin"
+        ]
+    });
+
+    user.isAdmin = true;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Admin role has been assigned"
+    });
+
+});
