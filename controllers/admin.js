@@ -149,6 +149,10 @@ export const assignAdminRole = expressAsyncHandler(async(req, res, next) => {
         ]
     });
 
+    if(user.isAdmin === true){
+        return next(new CustomError(400, "This user is already admin"));
+    }
+
     user.isAdmin = true;
     await user.save();
 
