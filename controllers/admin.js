@@ -160,3 +160,32 @@ export const assignAdminRole = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const undoAdminRole = expressAsyncHandler(async(req, res, next) => {
+
+    const {userId} = req.params;
+
+    const user = await User.findOne({
+        where: {
+            id: userId
+        },
+        attributes: [
+            "id",
+            "isAdmin"
+        ]
+    });
+
+    if(user.isAdmin === false){
+        return next(new CustomError(400, "This user do not have an admin role"));
+    }
+
+    user.isAdmin = false;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+    });
+
+});
