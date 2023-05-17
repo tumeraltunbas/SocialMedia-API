@@ -6,6 +6,7 @@ import Like from "./Like.js";
 import Follow from "./Follow.js";
 import Comment from "./Comment.js";
 import Block from "./Block.js";
+import Report from "./Report.js";
 
 //User and BackupCode many to many
 User.belongsToMany(BackupCode, { through: "UserBackupCodes" });
@@ -45,5 +46,13 @@ User.belongsToMany(User, { foreignKey: "BlockedId", through: Block, as: "blocked
 Block.belongsTo(User, { foreignKey: 'BlockerId' });
 Block.belongsTo(User, { foreignKey: 'BlockedId' });
 
+//User and Report one to many
+User.hasMany(Report, { foreignKey: "UserId" });
+Report.belongsTo(User, { onDelete: "CASCADE" });
+
+//Post and Report one to many
+Post.hasMany(Report, { foreignKey: "PostId" });
+Report.belongsTo(Post, { onDelete: "CASCADE" });
+
 await db.sync();
-export {User, BackupCode, Post, Like, Follow, Comment, Block};
+export {User, BackupCode, Post, Like, Follow, Comment, Block, Report};
