@@ -22,13 +22,21 @@ app.use(express.static("public"));
 app.use("/api", routes);
 app.use(errorHandler);
 
-wss.on("connection", (ws, req) => {
+wss.on("connection", (ws) => {
 
-    console.log("New client connected");
 
-        ws.on("message", (message) => {
+    //http://localhost:8080/api/messages/12345-123456
+    
+    ws.on("message", (message) => {
 
-        console.log(message.toString());
+
+        wss.clients.forEach((client) => {
+
+            if(client !== ws && client.readyState === WebSocket.OPEN){
+                client.send(message.toString());
+            }
+
+        });
 
     });
 
