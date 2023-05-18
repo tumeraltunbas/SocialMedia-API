@@ -67,6 +67,32 @@ export const getReportsByPostId = expressAsyncHandler(async(req, res, next) => {
                 model: User, 
                 attributes: ["id", "username"]
             },
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        reports: reports 
+    });
+
+});
+
+export const getReportById = expressAsyncHandler(async(req, res, next) => {
+
+    const {reportId} = req.params;
+    
+    const report = await Report.findOne({
+        where: {
+            id: reportId,
+        },
+        
+        include: [
+            { 
+                model: User, 
+                attributes: ["id", "username"]
+            },
             {
                 model: Post,
                 attributes: ["id", "imageUrl", "content"],
@@ -82,7 +108,7 @@ export const getReportsByPostId = expressAsyncHandler(async(req, res, next) => {
     .status(200)
     .json({
         success: true,
-        reports: reports 
+        report: report
     });
 
 });
