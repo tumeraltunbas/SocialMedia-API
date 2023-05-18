@@ -3,6 +3,7 @@ import { isAuth } from "../middlewares/auth/auth.js";
 import {imageUploader} from "../services/file/upload.service.js";
 import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, changeEmail, getLikedPosts, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll } from "../controllers/user.js";
 import { checkUserExists, checkUserFollowing, checkUserBlocked } from "../middlewares/database/db.query.js";
+import {postQueryMiddleware} from "../middlewares/database/postQueryMiddleware.js"
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.put("/profile/update", isAuth, updateProfile);
 router.post("/phone/add", isAuth, addPhoneNumber);
 router.put("/phone/change", isAuth, changePhoneNumber);
 router.put("/email/change", isAuth, changeEmail);
-router.get("/likes", isAuth, getLikedPosts);
+router.get("/likes", [isAuth, postQueryMiddleware], getLikedPosts);
 router.get("/follow/:userId", [isAuth, checkUserExists, checkUserBlocked], followUser);
 router.get("/unfollow/:userId", [isAuth, checkUserExists, checkUserBlocked], unfollowUser);
 router.get("/profile/:username", [isAuth, checkUserExists, checkUserBlocked], getProfile);

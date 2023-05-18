@@ -202,6 +202,8 @@ export const changeEmail = expressAsyncHandler(async(req, res, next) => {
 
 export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
 
+    const {startIndex, limit, pagination} = req.postQuery;
+
     const posts = await Post.findAll({
         where: { 
             isVisible: true 
@@ -211,9 +213,12 @@ export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
             where: { 
                 UserId: req.user.id 
             },
-            attributes: []
+            attributes: [],
         },
-        attributes: { exclude: ["isVisible"] }
+        attributes: { exclude: ["isVisible"] },
+        offset: startIndex,
+        limit: limit,
+        order: [[{model: Like}, "createdAt", "DESC"]]
     });
 
     return res
@@ -221,7 +226,8 @@ export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         posts: posts,
-        count: posts.length
+        count: posts.length,
+        pagination: pagination
     });
 
 });
