@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import db from "../services/database/db.services.js";
 import Comment from "./Comment.js";
 import Like from "./Like.js";
+import SavedPost from "./SavedPost.js";
 
 const Post = db.define("Post", {
 
@@ -53,6 +54,14 @@ Post.addHook("beforeSave", async function(post){
             }
         );
 
+        await SavedPost.update(
+            {
+                isVisible: false
+            },
+            {
+                PostId: post.id
+            }
+        );
     }
 
 });
