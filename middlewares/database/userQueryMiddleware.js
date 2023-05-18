@@ -6,7 +6,7 @@ export const userQueryMiddleware = expressAsyncHandler(async(req, res, next) => 
 
     const {startIndex, limit, pagination} = await paginationHelper(req, User);
 
-    const {where} = userSearchHelper(req);
+    const where = userSearchHelper(req);
 
     req.userQuery = {
         startIndex,
