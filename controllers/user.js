@@ -354,6 +354,7 @@ export const getProfile = expressAsyncHandler(async(req, res, next) => {
 
 export const getFollowings = expressAsyncHandler(async(req, res, next) => {
 
+    const {startIndex, limit, pagination, where} = req.userQuery;
     const {username} = req.params;
 
     const user = await User.findOne({
@@ -364,50 +365,61 @@ export const getFollowings = expressAsyncHandler(async(req, res, next) => {
     });
 
     const followings = await user.getFollowing({
+        where: where,
         attributes: [
             "id",
             "username",
             "firstName",
             "lastName",
             "profileImageUrl"
-        ]
+        ],
+        offset: startIndex,
+        limit:limit,
+        order: [["createdAt", "DESC"]],
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        followings: followings
+        followings: followings,
+        pagination: pagination
     });
 
 });
 
 export const getFollowers = expressAsyncHandler(async(req, res, next) => {
 
+    const {startIndex, limit, pagination, where} = req.userQuery;
     const {username} = req.params;
 
     const user = await User.findOne({
         where: {
             username: username
         },
-        attributes: ["id"]
+        attributes: ["id"],
     });
 
     const followers = await user.getFollowers({
+        where: where,
         attributes: [
             "id",
             "username",
             "firstName",
             "lastName",
             "profileImageUrl"
-        ]
+        ],
+        offset: startIndex,
+        limit:limit,
+        order: [["createdAt", "DESC"]],
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        followings: followers
+        followings: followers,
+        pagination: pagination
     });
 
 });
