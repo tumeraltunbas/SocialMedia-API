@@ -165,6 +165,30 @@ export const changePhoneNumber = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const deletePhoneNumber = expressAsyncHandler(async(req, res, next) => {
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        }
+    });
+
+    if(user.phoneNumber === null){
+        return next(new CustomError(400, "You do not already have a phone number"));
+    }
+
+    user.phoneNumber = null;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your phone number has been deleted"
+    });
+
+});
+
 export const changeEmail = expressAsyncHandler(async(req, res, next) => {
 
     const {email} = req.body;
