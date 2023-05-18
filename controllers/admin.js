@@ -69,6 +69,35 @@ export const getAllPosts = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const getUserById = expressAsyncHandler(async(req, res, next) => {
+
+    const {userId} = req.params;
+    
+    const user = await User.findOne({
+        where: {
+            id: userId
+        },
+        attributes: [
+            "id",
+            "firstName",
+            "lastName",
+            "username",
+            "email",
+            "phoneNumber",
+            "createdAt",
+            "isActive"
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        user: user
+    });
+
+});
+
 export const blockUserByAdmin = expressAsyncHandler(async(req, res, next) => {
 
     const {userId} = req.params;
