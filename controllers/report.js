@@ -4,6 +4,8 @@ import { capitalize } from "../utils/inputHelpers.js";
 import CustomError from "../services/error/CustomError.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import moment from "moment/moment.js";
+import {sendMail} from "../services/mail/mail.service.js";
 
 export const reportPost = expressAsyncHandler(async(req, res, next) => {
 
@@ -59,7 +61,7 @@ export const getReportsByPostId = expressAsyncHandler(async(req, res, next) => {
     const reports = await Report.findAll({
         where: {
             PostId: postId,
-            isVisible: true
+            status: "Pending"
         },
         order: [["createdAt", "asc"]],
         include: [
@@ -109,6 +111,71 @@ export const getReportById = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         report: report
+    });
+
+});
+
+export const concludeReport = expressAsyncHandler(async(req, res, next) => {
+
+    const {reportId} = req.params;
+    const {status, resultMessage} = req.body;
+
+    if(!resultMessage){
+        return next(new CustomError(400, "You must provide a result message"));
+    }
+
+    const report = await Report.findOne({
+        where: {
+            id: reportId,
+            status: "Pending"
+        },
+        include: [
+            {
+                model: User,
+                attributes: ["id", "firstName", "lastName", "email"]
+            },
+            {
+                model: Post,
+                include: {
+                    model: User,
+                    attributes: ["id", "username"]
+                },
+                attributes: ["id"]
+            }
+        ]
+    });
+
+    if(!report){
+        return next(new CustomError(400, "This report has already been concluded"));
+    }
+
+    report.status = capitalize(status);
+    report.resultMessage = capitalize(resultMessage);
+
+    if(report.status === "Accepted"){
+        report.isVisible = false;
+    }
+
+    await report.save();
+
+    const mailOptions = {
+        from: process.env.SMTP_USER,
+        to: report.User.email,
+        subject: `About your report in SocialMedia API`,
+        html: `<p>Dear ${report.User.firstName} ${report.User.lastName}, <br><br>
+        You have reported ${report.Post.User.username}'s post at ${moment(report.createdAt).format("DD.MM.YYYY HH:MM")}. <br>
+        Your report has been ${status.toLowerCase()}. <br>
+        Here is a message from admin: ${report.resultMessage}. <br><br>
+        SocialMedia-API <br>
+        Best Regards.</p>`
+    }
+
+    sendMail(mailOptions);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
     });
 
 });
