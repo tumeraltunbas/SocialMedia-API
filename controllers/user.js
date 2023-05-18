@@ -599,7 +599,8 @@ export const getSavedPosts = expressAsyncHandler(async(req, res, next) => {
     
     const savedPosts = await SavedPost.findAll({
         where: {
-            UserId: req.user.id
+            UserId: req.user.id,
+            isVisible: true
         },
         include: {
             model: Post,
