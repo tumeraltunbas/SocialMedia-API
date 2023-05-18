@@ -6,6 +6,7 @@ import Post from "../../models/Post.js";
 import Follow from "../../models/Follow.js";
 import Comment from "../../models/Comment.js";
 import Block from "../../models/Block.js";
+import Report from "../../models/Report.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
@@ -154,6 +155,25 @@ export const checkPostBelongsToBlockedUser = expressAsyncHandler(async(req, res,
 
     if(block){
         return next(new CustomError(400, "You can not access this route because you blocked that user"));
+    }
+
+    next();
+
+});
+
+export const checkReportExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {reportId} = req.params;
+
+    const report = await Report.findOne({
+        where: {
+            id: reportId
+        },
+        attributes: ["id"]
+    });
+
+    if(!report){
+        return next(new CustomError(400, "Report was not found"));
     }
 
     next();
