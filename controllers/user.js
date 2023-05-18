@@ -8,8 +8,8 @@ import Post from "../models/Post.js";
 import Like from "../models/Like.js";
 import Follow from "../models/Follow.js";
 import Block from "../models/Block.js";
-import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
+import SavedPost from "../models/SavedPost.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -591,6 +591,43 @@ export const unblockAll = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "All blocks have been unblocked"
+    });
+
+});
+
+export const getSavedPosts = expressAsyncHandler(async(req, res, next) => {
+    
+    const savedPosts = await SavedPost.findAll({
+        where: {
+            UserId: req.user.id
+        },
+        include: {
+            model: Post,
+            attributes: [
+                "id",
+                "content",
+                "imageUrl",
+                "createdAt"
+            ],
+            include: {
+                model: User,
+                attributes: [
+                    "id",
+                    "firstName",
+                    "lastName",
+                    "username",
+                    "profileImageUrl"
+                ]
+            }
+        },
+        order: [["createdAt", "DESC"]]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        savedPosts: savedPosts
     });
 
 });

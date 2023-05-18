@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAuth } from "../middlewares/auth/auth.js";
 import {imageUploader} from "../services/file/upload.service.js";
-import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail, getLikedPosts, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll } from "../controllers/user.js";
+import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail, getLikedPosts, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts } from "../controllers/user.js";
 import { checkUserExists, checkUserFollowing, checkUserBlocked } from "../middlewares/database/db.query.js";
 import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
 import { userQueryMiddleware } from "../middlewares/database/userQueryMiddleware.js";
@@ -25,5 +25,6 @@ router.get("/profile/:username/block", [isAuth, checkUserExists], blockUser);
 router.get("/profile/:username/unblock", [isAuth, checkUserExists], unblockUser);
 router.get("/blocks", [isAuth, userQueryMiddleware], getBlocks);
 router.post("/unblock/all", isAuth, unblockAll);
+router.get("/posts/saved", isAuth, getSavedPosts);
 
 export default router;
