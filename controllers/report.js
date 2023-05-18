@@ -3,6 +3,7 @@ import Report from "../models/Report.js";
 import { capitalize } from "../utils/inputHelpers.js";
 import CustomError from "../services/error/CustomError.js";
 import Post from "../models/Post.js";
+import User from "../models/User.js";
 
 export const reportPost = expressAsyncHandler(async(req, res, next) => {
 
@@ -47,6 +48,41 @@ export const reportPost = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Post has been reported"
+    });
+
+});
+
+export const getReportsByPostId = expressAsyncHandler(async(req, res, next) => {
+
+    const { postId } = req.params;
+
+    const reports = await Report.findAll({
+        where: {
+            PostId: postId,
+            isVisible: true
+        },
+        order: [["createdAt", "asc"]],
+        include: [
+            { 
+                model: User, 
+                attributes: ["id", "username"]
+            },
+            {
+                model: Post,
+                attributes: ["id", "imageUrl", "content"],
+                include: {
+                    model: User,
+                    attributes: ["id", "username"]
+                }   
+            }
+        ]
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        reports: reports 
     });
 
 });
