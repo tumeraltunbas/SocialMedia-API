@@ -22,7 +22,7 @@ router.get("/profile/:username/followings", [isAuth, checkUserExists, checkUserF
 router.get("/profile/:username/followers", [isAuth, checkUserExists, checkUserFollowing,userQueryMiddleware], getFollowers);
 router.get("/profile/:username/block", [isAuth, checkUserExists], blockUser);
 router.get("/profile/:username/unblock", [isAuth, checkUserExists], unblockUser);
-router.get("/blocks", isAuth, getBlocks);
+router.get("/blocks", [isAuth, userQueryMiddleware], getBlocks);
 router.post("/unblock/all", isAuth, unblockAll);
 
 export default router;

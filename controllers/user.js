@@ -505,25 +505,32 @@ export const unblockUser = expressAsyncHandler(async(req, res, next) => {
 
 export const getBlocks = expressAsyncHandler(async(req, res, next) => {
 
+    const {startIndex, limit, pagination} = req.userQuery;
+
     const blocks = await Block.findAll({
         where: {
-            BlockedId: req.user.id
+            BlockerId: req.user.id
         },
         include: {
             model: User,
             attributes: [
                 "id",
+                "username",
                 "firstName",
                 "lastName"
             ]
-        }
+        },
+        offset: startIndex,
+        limit: limit,
+        order: [["createdAt", "DESC"]]
     });
 
     return res
     .status(200)
     .json({
         success: true,
-        blocks: blocks
+        blocks: blocks,
+        pagination: pagination
     });
 
 });
