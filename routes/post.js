@@ -6,6 +6,7 @@ import { checkPostExists, checkPostBelongsToBlockedUser } from "../middlewares/d
 import likeRoutes from "./like.js";
 import commentRoutes from "./comment.js";
 import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
+import savedPostRoutes from "./savedPost.js";
 
 const router = Router();
 
@@ -20,5 +21,7 @@ router.get("/:postId", [isAuth, checkPostExists, checkPostBelongsToBlockedUser],
 router.use("/like/:postId", likeRoutes);
 //Comment routes
 router.use("/comment/:postId", commentRoutes);
+//Save post routes
+router.use("/save/:postId", savedPostRoutes);
 
 export default router;
