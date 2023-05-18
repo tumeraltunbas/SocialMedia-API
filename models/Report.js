@@ -16,7 +16,7 @@ const Report = db.define("Report", {
         allowNull: false
     },
     status: {
-        type: DataTypes.ENUM("Pending", "Concluded"),
+        type: DataTypes.ENUM("Pending", "Accepted", "Rejected"),
         defaultValue: "Pending"
     },
     resultMessage: {
