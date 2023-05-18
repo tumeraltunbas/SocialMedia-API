@@ -15,6 +15,14 @@ const Report = db.define("Report", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    status: {
+        type: DataTypes.ENUM("Pending", "Concluded"),
+        defaultValue: "Pending"
+    },
+    resultMessage: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     isVisible: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
