@@ -54,7 +54,7 @@ export const userSearchHelper = (req) => {
     let where = {}
 
     if(search){
-        where.content = {[Op.like]: `%${search}%`}
+        where.username = {[Op.like]: `%${search}%`}
     }
 
     return where;
