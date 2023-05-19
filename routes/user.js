@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAuth } from "../middlewares/auth/auth.js";
 import {imageUploader} from "../services/file/upload.service.js";
-import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail, getLikedPosts,getFollowRequests, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate } from "../controllers/user.js";
+import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail, getLikedPosts,getFollowRequests, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate, makeAccountPublic} from "../controllers/user.js";
 import { checkUserExists, checkUserFollowing, checkUserBlocked } from "../middlewares/database/db.query.js";
 import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
 import { userQueryMiddleware } from "../middlewares/database/userQueryMiddleware.js";
@@ -28,6 +28,7 @@ router.get("/blocks", [isAuth, userQueryMiddleware], getBlocks);
 router.post("/unblock/all", isAuth, unblockAll);
 router.get("/posts/saved", isAuth, getSavedPosts);
 router.get("/privacy/private", isAuth, makeAccountPrivate);
+router.get("/privacy/public", isAuth, makeAccountPublic);
 
 
 export default router;

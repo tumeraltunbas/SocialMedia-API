@@ -715,3 +715,31 @@ export const makeAccountPrivate = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const makeAccountPublic = expressAsyncHandler(async(req, res, next) => {
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: [
+            "id",
+            "isPrivateAccount"
+        ]
+    });
+
+    if(user.isPrivateAccount === false){
+        return next(new CustomError(400, "Your account already public"));
+    }
+
+    user.isPrivateAccount = false;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your account has been converted to public"
+    });
+
+});
