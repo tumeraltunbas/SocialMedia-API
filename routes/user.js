@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { isAuth } from "../middlewares/auth/auth.js";
 import {imageUploader} from "../services/file/upload.service.js";
-import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail, getLikedPosts,getFollowRequests, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate, makeAccountPublic} from "../controllers/user.js";
-import { checkUserExists, checkUserFollowing, checkUserBlocked } from "../middlewares/database/db.query.js";
+import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail, getLikedPosts,getFollowRequests, confirmFollowRequest, followUser, unfollowUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate, makeAccountPublic} from "../controllers/user.js";
+import { checkUserExists, checkUserFollowing, checkUserBlocked, checkFollowRequestExists } from "../middlewares/database/db.query.js";
 import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
 import { userQueryMiddleware } from "../middlewares/database/userQueryMiddleware.js";
 
@@ -17,6 +17,7 @@ router.put("/phone/delete", isAuth, deletePhoneNumber);
 router.put("/email/change", isAuth, changeEmail);
 router.get("/likes", [isAuth, postQueryMiddleware], getLikedPosts);
 router.get("/follow/requests", isAuth, getFollowRequests);
+router.get("/follow/requests/:followRequestId/confirm", [isAuth, checkFollowRequestExists], confirmFollowRequest);
 router.get("/follow/:userId", [isAuth, checkUserExists, checkUserBlocked], followUser);
 router.get("/unfollow/:userId", [isAuth, checkUserExists, checkUserBlocked], unfollowUser);
 router.get("/profile/:username", [isAuth, checkUserExists, checkUserBlocked], getProfile);

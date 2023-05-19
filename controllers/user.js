@@ -288,6 +288,32 @@ export const getFollowRequests = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const confirmFollowRequest = expressAsyncHandler(async(req, res, next) => {
+
+    const {followRequestId} = req.params;
+
+    const followRequest = await FollowRequest.findOne({
+        where: {
+            id: followRequestId
+        }
+    });
+
+    await Follow.create({
+        followerId: followRequest.senderId,
+        followingId: followRequest.receiverId
+    });
+
+    await followRequest.destroy();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Follow request has been accepted"
+    });
+
+});
+
 export const followUser = expressAsyncHandler(async(req, res, next) => {
 
     const {userId} = req.params;
