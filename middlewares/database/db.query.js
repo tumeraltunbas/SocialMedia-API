@@ -7,6 +7,7 @@ import Follow from "../../models/Follow.js";
 import Comment from "../../models/Comment.js";
 import Block from "../../models/Block.js";
 import Report from "../../models/Report.js";
+import FollowRequest from "../../models/FollowRequest.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
@@ -174,6 +175,26 @@ export const checkReportExists = expressAsyncHandler(async(req, res, next) => {
 
     if(!report){
         return next(new CustomError(400, "Report was not found"));
+    }
+
+    next();
+
+});
+
+export const checkFollowRequestExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {followRequestId} = req.params;
+
+    const followRequest = await FollowRequest.findOne({
+        where: {
+            id: followRequestId,
+            isVisible: true
+        },
+        attributes: ["id"]
+    });
+
+    if(!followRequest){
+        return next(new CustomError(404, "Follow request not found"));
     }
 
     next();
