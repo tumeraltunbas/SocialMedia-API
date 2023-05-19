@@ -64,11 +64,11 @@ Post.hasMany(SavedPost, { foreignKey: "PostId" });
 SavedPost.belongsTo(Post, { onDelete: "CASCADE" });
 
 //Follow Requests
-User.belongsToMany(User, { foreignKey: "senderId", through: FollowRequest, as: "senders" });
-User.belongsToMany(User, { foreignKey: "receiverId", through: FollowRequest, as: "receiverId" });
+User.hasMany(FollowRequest, { foreignKey: "senderId"} );
+User.hasMany(FollowRequest, { foreignKey: "receiverId" });
 
-FollowRequest.belongsTo(User, { foreignKey: 'senderId' });
-FollowRequest.belongsTo(User, { foreignKey: 'receiverId' });
+FollowRequest.belongsTo(User, { foreignKey: "senderId", as: "sender"});
+FollowRequest.belongsTo(User, { foreignKey: "receiverId", as: "receiver" });
 
 await db.sync();
 export {User, BackupCode, Post, Like, Follow, Comment, Block, Report};
