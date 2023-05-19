@@ -8,6 +8,7 @@ import Comment from "./Comment.js";
 import Block from "./Block.js";
 import Report from "./Report.js";
 import SavedPost from "./SavedPost.js";
+import FollowRequest from "./FollowRequest.js";
 
 //User and BackupCode many to many
 User.belongsToMany(BackupCode, { through: "UserBackupCodes" });
@@ -61,6 +62,13 @@ SavedPost.belongsTo(User, { onDelete: "CASCADE" });
 
 Post.hasMany(SavedPost, { foreignKey: "PostId" });
 SavedPost.belongsTo(Post, { onDelete: "CASCADE" });
+
+//Follow Requests
+User.belongsToMany(User, { foreignKey: "senderId", through: FollowRequest, as: "senders" });
+User.belongsToMany(User, { foreignKey: "receiverId", through: FollowRequest, as: "receiverId" });
+
+FollowRequest.belongsTo(User, { foreignKey: 'senderId' });
+FollowRequest.belongsTo(User, { foreignKey: 'receiverId' });
 
 await db.sync();
 export {User, BackupCode, Post, Like, Follow, Comment, Block, Report};

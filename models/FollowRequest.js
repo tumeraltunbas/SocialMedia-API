@@ -3,11 +3,11 @@ import { DataTypes } from "sequelize";
 
 const FollowRequest = db.define("FollowRequest", {
 
-    sender: {
+    senderId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    receiver: {
+    receiverId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
