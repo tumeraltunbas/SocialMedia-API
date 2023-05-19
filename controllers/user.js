@@ -632,3 +632,28 @@ export const getSavedPosts = expressAsyncHandler(async(req, res, next) => {
     });
 
 });
+
+export const makeAccountPrivate = expressAsyncHandler(async(req, res, next) => {
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id,
+            isActive: true
+        },
+        attributes: [
+            "id",
+            "isPrivateAccount"
+        ]
+    });
+
+    user.isPrivateAccount = true;
+    await user.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your account has been converted to a private account"
+    });
+
+});
