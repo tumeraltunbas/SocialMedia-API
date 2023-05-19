@@ -257,6 +257,37 @@ export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
 
 });
 
+export const getFollowRequests = expressAsyncHandler(async(req, res, next) => {
+
+    const followRequests = await FollowRequest.findAll({
+        where: {
+            receiverId: req.user.id,
+            isVisible: true
+        },
+        attributes: ["id"],
+        include: {
+            model: User,
+            as: "sender",
+            attributes: [
+                "id",
+                "username",
+                "firstName",
+                "lastName",
+                "profileImageUrl"
+            ]
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        followRequests: followRequests,
+        count: followRequests.length
+    });
+
+});
+
 export const followUser = expressAsyncHandler(async(req, res, next) => {
 
     const {userId} = req.params;
