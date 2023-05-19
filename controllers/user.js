@@ -348,21 +348,11 @@ export const followUser = expressAsyncHandler(async(req, res, next) => {
 
     if(user.isPrivateAccount === true){
         
-
-        //check a follow request already sent
-        const followRequest = await FollowRequest.findOne({
-            senderId: req.user.id,
-            receiverId: user.id
-        });
-
-        if(followRequest){
-            return next(new CustomError(400, "You already sent a follow request to this user"));
-        }
-
-        //create a follow request
-        await FollowRequest.create({
-            senderId: req.user.id,
-            receiverId: user.id 
+        await FollowRequest.findOrCreate({
+            where: {
+                senderId: req.user.id,
+                receiverId: user.id
+            }
         });
 
         return res
@@ -775,6 +765,24 @@ export const makeAccountPublic = expressAsyncHandler(async(req, res, next) => {
 
     user.isPrivateAccount = false;
     await user.save();
+
+    //Accept all follow requests when a user make public his/her profile
+    const followerRequests = await FollowRequest.findAll({
+        receiverId: req.user.id
+    });
+
+    for (let i = 0; i < followerRequests.length; i++) {
+
+        //accept all follow requests
+        await Follow.create({
+            followerId: followerRequests[i].senderId,
+            followingId: user.id
+        });
+
+        //delete follow request
+        await followerRequests[i].destroy();
+    
+    }
 
     return res
     .status(200)
