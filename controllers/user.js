@@ -337,7 +337,7 @@ export const followUser = expressAsyncHandler(async(req, res, next) => {
     const follow = await Follow.findOne({
         where: {
             followerId: req.user.id,
-            followingId: userId
+            followingId: user.id
         },
         attributes: ["id"]
     });
@@ -348,14 +348,25 @@ export const followUser = expressAsyncHandler(async(req, res, next) => {
 
     if(user.isPrivateAccount === true){
         
-        //if user's accoutn is private create a follow request
+
+        //check a follow request already sent
+        const followRequest = await FollowRequest.findOne({
+            senderId: req.user.id,
+            receiverId: user.id
+        });
+
+        if(followRequest){
+            return next(new CustomError(400, "You already sent a follow request to this user"));
+        }
+
+        //create a follow request
         await FollowRequest.create({
             senderId: req.user.id,
             receiverId: user.id 
         });
 
         return res
-        .status(200)
+        .status(201)
         .json({
             success: true,
             message: "Follow request has been successfully sent"
