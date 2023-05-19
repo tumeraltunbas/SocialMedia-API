@@ -704,6 +704,10 @@ export const makeAccountPrivate = expressAsyncHandler(async(req, res, next) => {
         ]
     });
 
+    if(user.isPrivateAccount === true){
+        return next(new CustomError(400, "Your account already private"));
+    }
+
     user.isPrivateAccount = true;
     await user.save();
 
