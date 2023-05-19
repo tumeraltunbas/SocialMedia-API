@@ -10,6 +10,7 @@ import Follow from "../models/Follow.js";
 import Block from "../models/Block.js";
 import bcrypt from "bcryptjs";
 import SavedPost from "../models/SavedPost.js";
+import FollowRequest from "../models/FollowRequest.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -264,13 +265,18 @@ export const followUser = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "You can not follow yourself"));
     }
 
+    //user to follow
     const user = await User.findOne({
         where: {
             id: userId
         },
-        attributes: ["id"]
+        attributes: [
+            "id", 
+            "isPrivateAccount"
+        ]
     });
 
+    //check already following
     const follow = await Follow.findOne({
         where: {
             followerId: req.user.id,
@@ -283,13 +289,34 @@ export const followUser = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "You are already following this user"));
     }
 
-    await user.addFollower(req.user.id);
+    if(user.isPrivateAccount === true){
+        
+        //if user's accoutn is private create a follow request
+        await FollowRequest.create({
+            senderId: req.user.id,
+            receiverId: user.id 
+        });
 
-    return res
-    .status(200)
-    .json({
-        success: true, 
-    });
+        return res
+        .status(200)
+        .json({
+            success: true,
+            message: "Follow request has been successfully sent"
+        });
+
+    }
+    else{
+
+        //if user's profile is public, follow.
+        await user.addFollower(req.user.id);
+
+        return res
+        .status(200)
+        .json({
+            success: true, 
+        });
+    
+    }
 
 });
 
