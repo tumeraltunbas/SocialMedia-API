@@ -128,6 +128,10 @@ const User = db.define("User", {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    isPrivateAccount: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
     isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
