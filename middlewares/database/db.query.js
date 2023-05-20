@@ -209,3 +209,28 @@ export const checkFollowRequestExists = expressAsyncHandler(async(req, res, next
     next();
 
 });
+
+export const checkPostBelongsToUser = expressAsyncHandler(async(req, res, next) => {
+
+    const {username, postId} = req.params;
+
+    const post = await Post.findOne({
+        where: {
+            id: postId
+        },
+        include: {
+            model: User,
+            where: {username: username}
+        }
+    });
+
+
+    console.log(post);
+
+    if(!post){
+        return next(new CustomError(400, "This post is not belong to specified user"));
+    }
+
+    next();
+
+});
