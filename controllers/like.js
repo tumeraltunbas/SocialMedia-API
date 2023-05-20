@@ -5,11 +5,15 @@ import CustomError from "../services/error/CustomError.js";
 export const likePost = expressAsyncHandler(async(req, res, next) => {
 
     const {postId} = req.params;
-    
+
+    if(req.profileAccess === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
+
     await Like.findOrCreate({
         where: {
             PostId: postId,
-            UserId: req.user.id
+            UserId: req.user.id     
         }
     });
 
