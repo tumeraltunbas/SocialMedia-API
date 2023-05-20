@@ -52,7 +52,7 @@ export const checkPostExists = expressAsyncHandler(async(req, res, next) => {
 
 });
 
-export const checkUserFollowing = expressAsyncHandler(async(req, res, next) => {
+export const checkProfileAccess = expressAsyncHandler(async(req, res, next) => {
 
     const {username} = req.params;
 
