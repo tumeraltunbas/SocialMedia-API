@@ -62,6 +62,18 @@ const User = db.define("User", {
         type: DataTypes.DATEONLY,
         allowNull: false
     },
+    biography: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    website: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    location: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     profileImageUrl: {
         type: DataTypes.STRING,
         defaultValue: "profile.jpg"
@@ -131,6 +143,14 @@ const User = db.define("User", {
     isPrivateAccount: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    accountFreezeDate: {
+        type: DataTypes.DATE,
+        defaultValue: null
+    },
+    accountFreezeCooldown: {
+        type: DataTypes.DATE,
+        defaultValue: null
     },
     isActive: {
         type: DataTypes.BOOLEAN,
