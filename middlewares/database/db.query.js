@@ -63,7 +63,7 @@ export const checkUserFollowing = expressAsyncHandler(async(req, res, next) => {
         attributes: ["id", "isPrivateAccount"]
     });
 
-    req.followStatus = true;
+    req.profileAccess = true;
 
     if(user.isPrivateAccount === false){ // means public account
         return next();
@@ -85,7 +85,7 @@ export const checkUserFollowing = expressAsyncHandler(async(req, res, next) => {
         return next();
     }
     else{
-        req.followStatus = false;
+        req.profileAccess = false;
     }
 
     next();

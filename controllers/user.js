@@ -230,7 +230,7 @@ export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
     const {startIndex, limit, pagination} = req.postQuery;
     const {username} = req.params;
 
-    if(req.followStatus === false){
+    if(req.profileAccess === false){
         return next(new CustomError(403, "You can not access this route because you are not following this user"));
     }
 
@@ -448,7 +448,7 @@ export const getProfile = expressAsyncHandler(async(req, res, next) => {
     const following = await user.getFollowing();
 
 
-    if(req.followStatus === true){
+    if(req.profileAccess === true){
 
         //If user follow this user, can see the posts
         await user.reload({
@@ -488,7 +488,7 @@ export const getFollowings = expressAsyncHandler(async(req, res, next) => {
     const {startIndex, limit, pagination, where} = req.userQuery;
     const {username} = req.params;
 
-    if(req.followStatus === false){
+    if(req.profileAccess === false){
         return next(new CustomError(403, "You can not access this route because you are not following this user"));
     }
 
@@ -528,7 +528,7 @@ export const getFollowers = expressAsyncHandler(async(req, res, next) => {
     const {startIndex, limit, pagination, where} = req.userQuery;
     const {username} = req.params;
 
-    if(req.followStatus === false){
+    if(req.profileAccess === false){
         return next(new CustomError(403, "You can not access this route because you are not following this user"));
     }
 
