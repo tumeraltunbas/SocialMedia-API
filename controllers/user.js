@@ -11,6 +11,7 @@ import Block from "../models/Block.js";
 import bcrypt from "bcryptjs";
 import SavedPost from "../models/SavedPost.js";
 import FollowRequest from "../models/FollowRequest.js";
+import Comment from "../models/Comment.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -225,7 +226,7 @@ export const changeEmail = expressAsyncHandler(async(req, res, next) => {
 
 });
 
-export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
+export const getLikedPostsByUser = expressAsyncHandler(async(req, res, next) => {
 
     const {startIndex, limit, pagination} = req.postQuery;
     const {username} = req.params;
@@ -266,6 +267,36 @@ export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
         likes:likes,
         count: likes.length,
         pagination: pagination
+    });
+
+});
+
+export const getCommentsByUser = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.params;
+
+    if(req.profileAccess === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
+
+    const comments = await Comment.findAll({
+        where: {
+            isVisible: true
+        },
+        attributes: { exclude: ["isVisible", "PostId", "UserId"] },
+        include: {
+            model: User,
+            where: { username: username },
+            attributes: ["id"]
+        },
+        order: [["createdAt", "DESC"]]
+    });
+    
+    return res
+    .status(200)
+    .json({
+        success: true,
+        comments: comments
     });
 
 });
