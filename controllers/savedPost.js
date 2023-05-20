@@ -6,6 +6,10 @@ export const savePost = expressAsyncHandler(async(req, res, next) => {
 
     const {postId} = req.params;
 
+    if(req.profileAccess === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
+
     const savedPost = await SavedPost.findOne({
         where: {
             PostId: postId,
