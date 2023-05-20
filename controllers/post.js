@@ -85,6 +85,10 @@ export const hidePost = expressAsyncHandler(async(req, res, next) => {
 export const getPostById = expressAsyncHandler(async(req, res, next) => {
 
     const {postId} = req.params;
+    
+    if(req.profileAccess === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
 
     const post = await Post.findOne({
         where: {
@@ -107,8 +111,7 @@ export const getPostById = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         post: post,
-        comments: post.Comments,
-        commentLength: post.Comments.length,
+        commentCount: post.Comments.length,
         likeCount: post.Likes.length
     });
 
