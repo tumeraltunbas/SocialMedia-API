@@ -60,8 +60,14 @@ export const checkUserFollowing = expressAsyncHandler(async(req, res, next) => {
         where: {
             username: username
         },
-        attributes: ["id"]
+        attributes: ["id", "isPrivateAccount"]
     });
+
+    req.followStatus = true;
+
+    if(user.isPrivateAccount === false){ // means public account
+        return next();
+    }
 
     if(user.id === req.user.id){
         return next();
@@ -75,8 +81,11 @@ export const checkUserFollowing = expressAsyncHandler(async(req, res, next) => {
         attributes: ["id"]
     });
 
-    if(!follow){
-        return next(new CustomError(404, "You are not following this user"));
+    if(follow){
+        return next();
+    }
+    else{
+        req.followStatus = false;
     }
 
     next();
