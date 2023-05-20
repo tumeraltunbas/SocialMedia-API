@@ -228,30 +228,43 @@ export const changeEmail = expressAsyncHandler(async(req, res, next) => {
 export const getLikedPosts = expressAsyncHandler(async(req, res, next) => {
 
     const {startIndex, limit, pagination} = req.postQuery;
+    const {username} = req.params;
 
-    const posts = await Post.findAll({
-        where: { 
-            isVisible: true 
-        },
-        include: {
-            model: Like,
-            where: { 
-                UserId: req.user.id 
-            },
-            attributes: [],
-        },
-        attributes: { exclude: ["isVisible"] },
-        offset: startIndex,
-        limit: limit,
-        order: [[{model: Like}, "createdAt", "DESC"]]
+    if(req.followStatus === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
+
+    const user = await User.findOne({
+        where: {
+            username: username
+        }
     });
 
+    const likes = await user.getLikes({
+        where: {
+            isVisible: true
+        },
+        attributes: ["id"],
+        include: {
+            model: Post,
+            attributes: [
+                "id",
+                "content",
+                "imageUrl",
+                "createdAt"
+            ]
+        },
+        offset: startIndex,
+        limit: limit,
+        order: [["createdAt", "DESC"]]
+    });
+    
     return res
     .status(200)
     .json({
         success: true,
-        posts: posts,
-        count: posts.length,
+        likes:likes,
+        count: likes.length,
         pagination: pagination
     });
 
@@ -476,7 +489,7 @@ export const getFollowings = expressAsyncHandler(async(req, res, next) => {
     const {username} = req.params;
 
     if(req.followStatus === false){
-        return next(new CustomError(400, "You can not access this route because you are not following this user"));
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
     }
 
     const user = await User.findOne({
@@ -516,7 +529,7 @@ export const getFollowers = expressAsyncHandler(async(req, res, next) => {
     const {username} = req.params;
 
     if(req.followStatus === false){
-        return next(new CustomError(400, "You can not access this route because you are not following this user"));
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
     }
 
     const user = await User.findOne({
