@@ -415,46 +415,55 @@ export const unfollowUser = expressAsyncHandler(async(req, res, next) => {
 export const getProfile = expressAsyncHandler(async(req, res, next) => {
 
     const {username} = req.params;
-
-    const user = await User.findOne({
+    
+    //Default query
+    let user = await User.findOne({
         where: {
             username: username
         },
-        include: [
-            {
-                model: Post,
-                where: { isvisible: true },
-                attributes: ["id", "content", "imageUrl"],
-            },
-            {
-                model: Like,
-                where: { isVisible: true },
-                include: Post
-            },
-        ],
         attributes: [
             "id",
+            "username",
             "firstName",
             "lastName",
-            "email",
-            "gender",
-            "dateOfBirth",
-            "phoneNumber",
             "profileImageUrl",
             "createdAt"
         ]
     });
-    
+
     const followers = await user.getFollowers();
     const following = await user.getFollowing();
+
+
+    if(req.followStatus === true){
+
+        //If user follow this user, can see the posts
+        await user.reload({
+
+            include: [
+                {
+                    model: Post,
+                    attributes: ["id", "content", "imageUrl"],
+                },
+            ],
+            attributes: [
+                "id",
+                "username",
+                "firstName",
+                "lastName",
+                "profileImageUrl",
+                "createdAt"
+            ]
+
+        });
+
+    }
 
     return res
     .status(200)
     .json({
         success: true,
         user: user,
-        userPosts: user.Posts,
-        userLikedPosts: user.Likes,
         followingCount: following.length,
         followersCount: followers.length
     });
