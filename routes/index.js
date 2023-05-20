@@ -6,6 +6,7 @@ import postRoutes from "./post.js";
 import adminRoutes from "./admin.js";
 import reportRoutes from "../routes/report.js"
 import likeRoutes from "../routes/like.js";
+import commentRoutes from "../routes/comment.js";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/post", postRoutes);
 router.use("/admin", adminRoutes);
 router.use("/report", reportRoutes);
 router.use("/like", likeRoutes);
+router.use("/comment", commentRoutes);
 
 export default router;

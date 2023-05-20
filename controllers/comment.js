@@ -6,6 +6,10 @@ import User from "../models/User.js";
 export const getCommentsByPostId = expressAsyncHandler(async(req, res, next) => {
 
     const {postId} = req.params;
+    
+    if(req.profileAccess === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
 
     const comments = await Comment.findAll({
         where: {
@@ -43,6 +47,10 @@ export const createComment = expressAsyncHandler(async(req, res, next) => {
     const {content} = req.body;
     const file = req.file
 
+    if(req.profileAccess === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
+
     if(!content && !file){
 
         return next(new CustomError(400, "Please provide at least a content or image"));
@@ -68,6 +76,10 @@ export const updateComment = expressAsyncHandler(async(req, res, next) => {
 
     const {commentId} = req.params;
     const {content} = req.body;
+
+    if(req.profileAccess === false){
+        return next(new CustomError(403, "You can not access this route because you are not following this user"));
+    }
 
     const comment = await Comment.findOne({
         where: {

@@ -17,8 +17,6 @@ router.put("/:postId", [isAuth, checkPostExists, getPostOwnerAccess], updatePost
 router.put("/:postId/hide", [isAuth, checkPostExists, getPostOwnerAccess], hidePost);
 router.get("/:postId", [isAuth, checkPostExists, checkPostBelongsToBlockedUser], getPostById);
 
-//Comment routes
-router.use("/comment/:postId", commentRoutes);
 //Save post routes
 router.use("/save/:postId", savedPostRoutes);
 
