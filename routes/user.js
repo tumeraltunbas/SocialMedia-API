@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAuth } from "../middlewares/auth/auth.js";
 import {imageUploader} from "../services/file/upload.service.js";
-import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail,getFollowRequests, confirmFollowRequest, followUser, unfollowUser, getLikedPostsByUser, getCommentsByUser, getProfile, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate, makeAccountPublic} from "../controllers/user.js";
+import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail,getFollowRequests, confirmFollowRequest, followUser, unfollowUser, getLikedPostsByUser, getCommentsByUser, getProfile, getProfileAsQr, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate, makeAccountPublic} from "../controllers/user.js";
 import { checkUserExists, checkProfileAccess, checkUserBlocked, checkFollowRequestExists } from "../middlewares/database/db.query.js";
 import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
 import { userQueryMiddleware } from "../middlewares/database/userQueryMiddleware.js";
@@ -22,6 +22,7 @@ router.get("/follow/requests/:followRequestId/confirm", checkFollowRequestExists
 router.get("/follow/:userId", [checkUserExists, checkUserBlocked], followUser);
 router.get("/unfollow/:userId", [checkUserExists, checkUserBlocked], unfollowUser);
 router.get("/profile/:username", [checkUserExists, checkUserBlocked, checkProfileAccess], getProfile);
+router.get("/profile/:username/qr", [checkUserExists, checkUserBlocked], getProfileAsQr);
 router.get("/profile/:username/likes", [checkUserExists, postQueryMiddleware, checkProfileAccess], getLikedPostsByUser);
 router.get("/profile/:username/comments", [checkUserExists, checkProfileAccess], getCommentsByUser);
 router.get("/profile/:username/followings", [checkUserExists, checkProfileAccess, userQueryMiddleware], getFollowings);

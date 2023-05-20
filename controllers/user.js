@@ -12,6 +12,7 @@ import bcrypt from "bcryptjs";
 import SavedPost from "../models/SavedPost.js";
 import FollowRequest from "../models/FollowRequest.js";
 import Comment from "../models/Comment.js";
+import qrcode from "qrcode";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -510,6 +511,23 @@ export const getProfile = expressAsyncHandler(async(req, res, next) => {
         user: user,
         followingCount: following.length,
         followersCount: followers.length
+    });
+
+});
+
+export const getProfileAsQr = expressAsyncHandler(async(req, res, next) => {
+
+    const {username} = req.params;
+    const {DOMAIN} = process.env;
+
+    const url = `${DOMAIN}/api/user/profile/${username}`;
+    const qrCode = await qrcode.toDataURL(url);
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        qrCode: qrCode
     });
 
 });
