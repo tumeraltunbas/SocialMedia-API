@@ -81,6 +81,7 @@ export const signIn = expressAsyncHandler(async(req, res, next) => {
     if(user.isBlocked === false && user.isActive === false){
 
         user.isActive = true;
+        user.accountFreezeCooldown = Date.now() + (7 * 24 * 60 * 60 * 1000) //Date.now() + 1 week
         await user.save();
     }
 
@@ -625,14 +626,25 @@ export const deactivateAccount = expressAsyncHandler(async(req, res, next) => {
             id: req.user.id,
             isActive: true
         },
-        attributes: ["id", "password", "isActive"]
+        attributes: [
+            "id", 
+            "password", 
+            "isActive",
+            "accountFreezeDate",
+            "accountFreezeCooldown"
+        ]
     });
 
     if(!bcrypt.compareSync(password, user.password)){
         return next(new CustomError(400, "Password is invalid"));
     }
 
+    if(user.accountFreezeCooldown > Date.now()){
+        return next(new CustomError(400, "You can freeze your account again after 1 week after you open it."));
+    }
+
     user.isActive = false;
+    user.accountFreezeDate = Date.now();
     await user.save();
 
     return res
