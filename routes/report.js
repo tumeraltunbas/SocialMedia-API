@@ -5,9 +5,11 @@ import { reportPost, getReportsByPostId, getReportById, concludeReport } from ".
 
 const router = Router();
 
-router.post("/:postId", [isAuth, checkPostExists], reportPost);
-router.get("/post/:postId", [isAuth, getAdminAccess, checkPostExists], getReportsByPostId);
-router.get("/:reportId", [isAuth, getAdminAccess, checkReportExists], getReportById);
-router.put("/:reportId", [isAuth, getAdminAccess, checkReportExists], concludeReport);
+router.use(isAuth);
+
+router.post("/:postId", checkPostExists, reportPost);
+router.get("/post/:postId", getAdminAccess, checkPostExists, getReportsByPostId);
+router.get("/:reportId", [getAdminAccess, checkReportExists], getReportById);
+router.put("/:reportId", [getAdminAccess, checkReportExists], concludeReport);
 
 export default router;

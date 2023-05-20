@@ -8,28 +8,30 @@ import { userQueryMiddleware } from "../middlewares/database/userQueryMiddleware
 
 const router = Router();
 
-router.post("/profile/image", [isAuth, imageUploader.single("file")], uploadProfileImage);
-router.put("/profile/image/remove", isAuth, removeProfileImage);
-router.put("/profile/update", isAuth, updateProfile);
-router.post("/phone/add", isAuth, addPhoneNumber);
-router.put("/phone/change", isAuth, changePhoneNumber);
-router.put("/phone/delete", isAuth, deletePhoneNumber);
-router.put("/email/change", isAuth, changeEmail);
-router.get("/likes", [isAuth, postQueryMiddleware], getLikedPosts);
-router.get("/follow/requests", isAuth, getFollowRequests);
-router.get("/follow/requests/:followRequestId/confirm", [isAuth, checkFollowRequestExists], confirmFollowRequest);
-router.get("/follow/:userId", [isAuth, checkUserExists, checkUserBlocked], followUser);
-router.get("/unfollow/:userId", [isAuth, checkUserExists, checkUserBlocked], unfollowUser);
-router.get("/profile/:username", [isAuth, checkUserExists, checkUserBlocked], getProfile);
-router.get("/profile/:username/followings", [isAuth, checkUserExists, checkUserFollowing, userQueryMiddleware], getFollowings);
-router.get("/profile/:username/followers", [isAuth, checkUserExists, checkUserFollowing,userQueryMiddleware], getFollowers);
-router.get("/profile/:username/block", [isAuth, checkUserExists], blockUser);
-router.get("/profile/:username/unblock", [isAuth, checkUserExists], unblockUser);
-router.get("/blocks", [isAuth, userQueryMiddleware], getBlocks);
-router.post("/unblock/all", isAuth, unblockAll);
-router.get("/posts/saved", isAuth, getSavedPosts);
-router.get("/privacy/private", isAuth, makeAccountPrivate);
-router.get("/privacy/public", isAuth, makeAccountPublic);
+router.use(isAuth);
+
+router.post("/profile/image", imageUploader.single("file"), uploadProfileImage);
+router.put("/profile/image/remove", removeProfileImage);
+router.put("/profile/update", updateProfile);
+router.post("/phone/add", addPhoneNumber);
+router.put("/phone/change", changePhoneNumber);
+router.put("/phone/delete", deletePhoneNumber);
+router.put("/email/change", changeEmail);
+router.get("/likes", postQueryMiddleware, getLikedPosts);
+router.get("/follow/requests", getFollowRequests);
+router.get("/follow/requests/:followRequestId/confirm", checkFollowRequestExists, confirmFollowRequest);
+router.get("/follow/:userId", [checkUserExists, checkUserBlocked], followUser);
+router.get("/unfollow/:userId", [checkUserExists, checkUserBlocked], unfollowUser);
+router.get("/profile/:username", [checkUserExists, checkUserBlocked, checkUserFollowing], getProfile);
+router.get("/profile/:username/followings", [checkUserExists, checkUserFollowing, userQueryMiddleware], getFollowings);
+router.get("/profile/:username/followers", [checkUserExists, checkUserFollowing, userQueryMiddleware], getFollowers);
+router.get("/profile/:username/block", [checkUserExists], blockUser);
+router.get("/profile/:username/unblock", [checkUserExists], unblockUser);
+router.get("/blocks", userQueryMiddleware, getBlocks);
+router.post("/unblock/all", unblockAll);
+router.get("/posts/saved", getSavedPosts);
+router.get("/privacy/private", makeAccountPrivate);
+router.get("/privacy/public", makeAccountPublic);
 
 
 export default router;

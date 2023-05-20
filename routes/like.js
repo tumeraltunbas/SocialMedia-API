@@ -5,7 +5,9 @@ import { likePost, undoLikePost } from "../controllers/like.js";
 
 const router = Router({mergeParams: true});
 
-router.get("/", [isAuth, checkPostExists, checkPostBelongsToBlockedUser], likePost);
-router.get("/undo", [isAuth, checkPostExists, checkPostBelongsToBlockedUser], undoLikePost);
+router.use([isAuth, checkPostExists, checkPostBelongsToBlockedUser]);
+
+router.get("/", likePost);
+router.get("/undo", undoLikePost);
 
 export default router;

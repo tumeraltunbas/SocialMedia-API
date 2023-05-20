@@ -5,7 +5,9 @@ import { savePost, undoSavePost } from "../controllers/savedPost.js";
 
 const router = Router({mergeParams: true});
 
-router.get("/", [isAuth, checkPostExists, checkPostBelongsToBlockedUser], savePost);
-router.delete("/", [isAuth, checkPostExists], undoSavePost);
+router.use([isAuth, checkPostExists]);
+
+router.get("/", checkPostBelongsToBlockedUser, savePost);
+router.delete("/", undoSavePost);
 
 export default router;

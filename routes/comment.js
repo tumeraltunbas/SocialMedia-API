@@ -6,9 +6,11 @@ import { uploader } from "../services/file/upload.service.js";
 
 const router = Router({mergeParams: true});
 
-router.get("/", [isAuth, checkPostExists], getCommentsByPostId);
-router.post("/", [isAuth, checkPostExists, checkPostBelongsToBlockedUser, uploader.single("file")], createComment);
-router.put("/:commentId", [isAuth, checkCommentExists, getCommentOwnerAccess], updateComment);
-router.put("/:commentId/hide", [isAuth, checkCommentExists, getCommentOwnerAccess], hideComment);
+router.use(isAuth);
+
+router.get("/", checkPostExists, getCommentsByPostId);
+router.post("/", [checkPostExists, checkPostBelongsToBlockedUser, uploader.single("file")], createComment);
+router.put("/:commentId", [checkCommentExists, getCommentOwnerAccess], updateComment);
+router.put("/:commentId/hide", [checkCommentExists, getCommentOwnerAccess], hideComment);
 
 export default router;

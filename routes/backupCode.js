@@ -4,9 +4,11 @@ import { createBackupCodes, refreshBackupCodes, deleteBackupCodes } from "../con
 
 const router = Router();
 
-router.get("/create", isAuth, createBackupCodes);
-router.get("/refresh", isAuth, refreshBackupCodes);
-router.get("/delete", isAuth, deleteBackupCodes);
+router.use(isAuth),
+
+router.get("/create", createBackupCodes);
+router.get("/refresh", refreshBackupCodes);
+router.get("/delete", deleteBackupCodes);
 
 
 export default router;
