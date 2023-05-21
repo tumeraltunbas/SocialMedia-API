@@ -130,14 +130,23 @@ export const checkUserBlocked = expressAsyncHandler(async(req, res, next) => {
 
     const block = await Block.findOne({
         where: {
-            BlockerId: req.user.id,
-            BlockedId: user.id
+            [Op.or]: [
+                {
+                    BlockerId: req.user.id,
+                    BlockedId: user.id
+                },
+                {
+                    BlockerId: user.id,
+                    BlockedId: req.user.id,
+                }
+            ]
+
         },
         attributes: ["id"]
     });
 
     if(block){
-        return next(new CustomError(400, "You can not access this route because you blocked that user"));
+        return next(new CustomError(400, "You can not access this route due to block"));
     }
 
     next();
