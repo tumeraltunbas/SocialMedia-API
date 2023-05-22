@@ -9,6 +9,7 @@ import Block from "./Block.js";
 import Report from "./Report.js";
 import SavedPost from "./SavedPost.js";
 import FollowRequest from "./FollowRequest.js";
+import VerifyRequest from "./VerifyRequest.js";
 
 //User and BackupCode many to many
 User.belongsToMany(BackupCode, { through: "UserBackupCodes" });
@@ -70,5 +71,9 @@ User.hasMany(FollowRequest, { foreignKey: "receiverId" });
 FollowRequest.belongsTo(User, { foreignKey: "senderId", as: "sender"});
 FollowRequest.belongsTo(User, { foreignKey: "receiverId", as: "receiver" });
 
+//VerifyRequest
+User.hasMany(VerifyRequest, { foreignKey: "UserId"} );
+VerifyRequest.belongsTo(User, { onDelete: "CASCADE" });
+
 await db.sync();
-export {User, BackupCode, Post, Like, Follow, Comment, Block, Report};
+export {User, BackupCode, Post, Like, Follow, Comment, Block, Report, FollowRequest, VerifyRequest};
