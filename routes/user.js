@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAuth } from "../middlewares/auth/auth.js";
 import {imageUploader} from "../services/file/upload.service.js";
-import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail,getFollowRequests, confirmFollowRequest, followUser, unfollowUser, getLikedPostsByUser, getCommentsByUser, getProfile, getProfileAsQr, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate, makeAccountPublic, requestUserData } from "../controllers/user.js";
+import { uploadProfileImage, removeProfileImage, updateProfile, addPhoneNumber, changePhoneNumber, deletePhoneNumber, changeEmail,getFollowRequests, confirmFollowRequest, followUser, unfollowUser, getLikedPostsByUser, getCommentsByUser, getProfile, getProfileAsQr, getFollowings, getFollowers, blockUser, unblockUser, getBlocks, unblockAll, getSavedPosts, makeAccountPrivate, makeAccountPublic, requestUserData, verifyRequest } from "../controllers/user.js";
 import { checkUserExists, checkProfileAccess, checkUserBlocked, checkFollowRequestExists } from "../middlewares/database/db.query.js";
 import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
 import { userQueryMiddleware } from "../middlewares/database/userQueryMiddleware.js";
@@ -35,6 +35,7 @@ router.get("/posts/saved", getSavedPosts);
 router.get("/privacy/private", makeAccountPrivate);
 router.get("/privacy/public", makeAccountPublic);
 router.post("/request/mydata", requestUserData);
+router.get("/account/verify/request", isAuth, verifyRequest);
 
 
 export default router;

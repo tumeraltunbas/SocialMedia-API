@@ -14,6 +14,7 @@ import FollowRequest from "../models/FollowRequest.js";
 import Comment from "../models/Comment.js";
 import qrcode from "qrcode";
 import Report from "../models/Report.js";
+import VerifyRequest from "../models/VerifyRequest.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -972,6 +973,58 @@ export const requestUserData = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your data has been sent your email address"
+    });
+
+});
+
+export const verifyRequest = expressAsyncHandler(async(req, res, next) => {
+
+    const verifyRequest = await VerifyRequest.findOne({
+        where: {
+            UserId: req.user.id,
+            status: "Pending"
+        }
+    });
+
+    if(verifyRequest){
+        return next(new CustomError(400, "You already have a pending request. You cannot submit a new request yet"));
+    }
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: [
+            "id",
+            "phoneNumber"
+        ]
+    });
+
+    const followers = await Follow.count({
+        where: {
+            FollowingId: req.user.id
+        }
+    });
+
+    const posts = await Post.count({
+        where: {
+            UserId: req.user.id
+        }
+    });
+
+    if(followers < 10000 || posts <= 0 || !user.phoneNumber){
+        return next(new CustomError(400, "You must have for apply account verification:  10k followers, at least one post, add your phone number"));
+    }
+
+    await VerifyRequest.create({
+        UserId: req.user.id
+    });
+
+    return res
+    .status(201)
+    .json({
+        success: true,
+        message: "Account verification request has been sent our staff. The result will be sent by email within a week"
     });
 
 });
