@@ -144,6 +144,10 @@ const User = db.define("User", {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    isAccountVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
     accountFreezeDate: {
         type: DataTypes.DATE,
         defaultValue: null
