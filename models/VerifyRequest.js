@@ -9,7 +9,7 @@ const VerifyRequest = db.define("VerifyRequest", {
     },
     status: {
         type: DataTypes.ENUM("Pending", "Concluced"),
-        allowNull: true
+        defaultValue: "Pending"
     },
     result: {
         type: DataTypes.ENUM("Accepted", "Rejected"),
