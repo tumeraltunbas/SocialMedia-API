@@ -2,7 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import CustomError from "../services/error/CustomError.js";
 import { sendPhoneCodeService } from "../services/sms/sms.service.js";
-import { sendEmailVerificationMail } from "../services/mail/mail.service.js";
+import { sendEmailVerificationMail, sendMail } from "../services/mail/mail.service.js";
 import { capitalize } from "../utils/inputHelpers.js";
 import Post from "../models/Post.js";
 import Like from "../models/Like.js";
@@ -13,6 +13,7 @@ import SavedPost from "../models/SavedPost.js";
 import FollowRequest from "../models/FollowRequest.js";
 import Comment from "../models/Comment.js";
 import qrcode from "qrcode";
+import Report from "../models/Report.js";
 
 export const uploadProfileImage = expressAsyncHandler(async(req, res, next) => {
 
@@ -868,6 +869,109 @@ export const makeAccountPublic = expressAsyncHandler(async(req, res, next) => {
     .json({
         success: true,
         message: "Your account has been converted to public"
+    });
+
+});
+
+export const requestUserData = expressAsyncHandler(async(req, res, next) => {
+
+    const {password} = req.body;
+    const {SMTP_USER} = process.env;
+
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: {
+            exclude: [
+                "isAdmin",
+                "twoFactorSecret",
+                "emailVerificationToken",
+                "emailVerificationTokenExpires",
+                "phoneCode",
+                "phoneCodeExpires",
+                "resetPasswordToken",
+                "resetPasswordTokenExpires",
+                "isBlocked",
+                "accountFreezeDate",
+                "accountFreezeCooldown",
+                "isActive"
+            ]
+        }
+    });
+
+    if(!bcrypt.compareSync(password, user.password)){
+        return next(new CustomError(400, "Your password is invalid"));
+    }
+
+    const userResponse = {...user.toJSON(), password: undefined}; //Password will not return to user
+
+    const posts = await Post.findAll({
+        where: {
+            UserId: user.id,
+            isVisible: true
+        },        
+        attributes: { 
+            exclude: [
+                "id",
+                "UserId",
+                "isHidByUser",
+                "isVisible",
+            ]
+        }
+    });
+
+    const reports = await Report.findAll({
+        where: {
+            UserId: req.user.id,
+        },
+        attributes: {
+            exclude: [
+                "id",
+                "UserId",
+                "PostId"
+            ]
+        },
+        include: {
+            model: Post,
+            attributes: { 
+                exclude: [
+                    "id",
+                    "UserId",
+                    "isHidByUser",
+                    "isVisible",
+                ]
+            }
+        }
+    });
+
+    const requestedData = {
+        user: userResponse,
+        posts: posts,
+        reports: reports
+    };
+
+    const mailOptions = {
+        from: SMTP_USER,
+        to: user.email,
+        subject: "About Your Data Request",
+        text: `Dear ${user.username},\n\nYou have requested your data from our system. Your data is attached below.\n\nBest Regards,\nSocialMedia-API`,
+        attachments: [
+            {
+                filename: `${user.username}_data.json`,
+                content: JSON.stringify(requestedData, null, 2)
+            }    
+
+        ]
+    };
+
+    sendMail(mailOptions);
+    
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Your data has been sent your email address"
     });
 
 });
