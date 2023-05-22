@@ -12,8 +12,8 @@ const VerifyRequest = db.define("VerifyRequest", {
         defaultValue: "Pending"
     },
     result: {
-        type: DataTypes.ENUM("Accepted", "Rejected"),
-        allowNull: false
+        type: DataTypes.STRING,
+        allowNull: true
     },
     createdAt: {
         type: DataTypes.DATE,
