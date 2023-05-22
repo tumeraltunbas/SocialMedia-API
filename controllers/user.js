@@ -955,7 +955,7 @@ export const requestUserData = expressAsyncHandler(async(req, res, next) => {
         from: SMTP_USER,
         to: user.email,
         subject: "About Your Data Request",
-        text: `Dear ${user.username},\n\nYou have requested your data from our system. Your data is attached below.\n\nBest Regards,\nSocialMedia-API`,
+        text: `Dear ${user.firstName} ${user.lastName},\n\nYou have requested your data from our system. Your data is attached below.\n\nBest Regards,\nSocialMedia-API`,
         attachments: [
             {
                 filename: `${user.username}_data.json`,
