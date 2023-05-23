@@ -250,3 +250,48 @@ export const getAllVerifyRequests = expressAsyncHandler(async(req, res, next) =>
     });
 
 });
+
+export const getVerifyRequestById = expressAsyncHandler(async(req, res, next) => {
+
+    const {verifyRequestId} = req.params;
+
+    const verifyRequest = await VerifyRequest.findOne({
+        where: {
+            id: verifyRequestId
+        },
+        attributes: [
+            "id",
+            "status",
+            "result",
+            "createdAt"
+        ],
+        include: {
+            model: User,
+            attributes: [
+                "id",
+                "username",
+                "firstName",
+                "lastName",
+                "email",
+                "biography",
+                "phoneNumber",
+            ],
+            include: {
+                model: Post,
+                attributes: [
+                    "id",
+                    "content",
+                    "imageUrl"
+                ]
+            }
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        verifyRequest: verifyRequest
+    });
+
+});
