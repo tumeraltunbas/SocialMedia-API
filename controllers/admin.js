@@ -3,6 +3,8 @@ import User from "../models/User.js";
 import Post from "../models/Post.js";
 import CustomError from "../services/error/CustomError.js";
 import VerifyRequest from "../models/VerifyRequest.js";
+import { sendMail } from "../services/mail/mail.service.js";
+import { capitalize } from "../utils/inputHelpers.js";
 
 export const getAllUsers = expressAsyncHandler(async(req, res, next) => {
 
@@ -292,6 +294,63 @@ export const getVerifyRequestById = expressAsyncHandler(async(req, res, next) =>
     .json({
         success: true,
         verifyRequest: verifyRequest
+    });
+
+});
+
+export const concludeVerifyRequest = expressAsyncHandler(async(req, res, next) => {
+
+    const {verifyRequestId} = req.params;
+    const {result, message} = req.body;
+    const { SMTP_USER } = process.env;
+
+    const verifyRequest = await VerifyRequest.findOne({
+        where: {
+            id: verifyRequestId,
+            status: "Pending"
+        },
+        attributes: [
+            "id",
+            "status",
+            "result",
+            "createdAt"
+        ],
+        include: {
+            model: User,
+            attributes: [
+                "id",
+                "firstName",
+                "lastName",
+                "email",
+                "isAccountVerified"
+            ]
+        }
+    });
+
+    verifyRequest.status = "Concluded"
+    verifyRequest.result = capitalize(result);
+    
+    if(verifyRequest.result === "Accepted"){
+
+        verifyRequest.User.isAccountVerified = true;
+        await verifyRequest.User.save();
+    }
+
+    await verifyRequest.save();
+
+    const mailOptions = {
+        from: SMTP_USER,
+        to: verifyRequest.User.email,
+        subject: "About Your Verification Request",
+        text: `Dear ${verifyRequest.User.firstName} ${verifyRequest.User.lastName},\n\nYour account verification request has been ${verifyRequest.result.toLowerCase()}.\nHere is a message from admin: ${message}\n\nBest Regards\nSocialMedia-API`
+    }
+
+    sendMail(mailOptions);
+
+    return res
+    .status(200)
+    .json({
+        success: true
     });
 
 });
