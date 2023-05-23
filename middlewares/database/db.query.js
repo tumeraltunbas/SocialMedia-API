@@ -8,6 +8,7 @@ import Comment from "../../models/Comment.js";
 import Block from "../../models/Block.js";
 import Report from "../../models/Report.js";
 import FollowRequest from "../../models/FollowRequest.js";
+import VerifyRequest from "../../models/VerifyRequest.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
@@ -234,10 +235,27 @@ export const checkPostBelongsToUser = expressAsyncHandler(async(req, res, next) 
     });
 
 
-    console.log(post);
-
     if(!post){
         return next(new CustomError(400, "This post is not belong to specified user"));
+    }
+
+    next();
+
+});
+
+export const checkVerifyRequestExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {verifyRequestId} = req.params;
+
+    const verifyRequest = await VerifyRequest.findOne({
+        where: {
+            id: verifyRequestId
+        },
+        attributes: ["id"]
+    }) ;
+
+    if(!verifyRequest){
+        return next(new CustomError(404, "There is no verify request with that id"));
     }
 
     next();
