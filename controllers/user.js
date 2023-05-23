@@ -474,6 +474,7 @@ export const getProfile = expressAsyncHandler(async(req, res, next) => {
             "firstName",
             "lastName",
             "profileImageUrl",
+            "isAccountVerified",
             "createdAt"
         ]
     });
@@ -979,6 +980,24 @@ export const requestUserData = expressAsyncHandler(async(req, res, next) => {
 
 export const verifyRequest = expressAsyncHandler(async(req, res, next) => {
 
+    //Get user
+    const user = await User.findOne({
+        where: {
+            id: req.user.id
+        },
+        attributes: [
+            "id",
+            "phoneNumber",
+            "isAccountVerified"
+        ]
+    });
+
+    //Check user's account is already verified
+    if(user.isAccountVerified === true){
+        return next(new CustomError(400, "Your account is already verified"));
+    }
+
+    //Get verify request
     const verifyRequest = await VerifyRequest.findOne({
         where: {
             UserId: req.user.id,
@@ -986,20 +1005,12 @@ export const verifyRequest = expressAsyncHandler(async(req, res, next) => {
         }
     });
 
+    //Check user has a pending request
     if(verifyRequest){
         return next(new CustomError(400, "You already have a pending request. You cannot submit a new request yet"));
     }
 
-    const user = await User.findOne({
-        where: {
-            id: req.user.id
-        },
-        attributes: [
-            "id",
-            "phoneNumber"
-        ]
-    });
-
+    //Follower and post control so that the user can apply for account verification
     const followers = await Follow.count({
         where: {
             FollowingId: req.user.id
@@ -1016,6 +1027,7 @@ export const verifyRequest = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "You must have for apply account verification:  10k followers, at least one post, add your phone number"));
     }
 
+    //Create verify request
     await VerifyRequest.create({
         UserId: req.user.id
     });
