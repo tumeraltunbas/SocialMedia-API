@@ -15,6 +15,10 @@ const VerifyRequest = db.define("VerifyRequest", {
         type: DataTypes.STRING,
         allowNull: true
     },
+    isVisible: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
