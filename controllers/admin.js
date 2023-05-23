@@ -2,6 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
 import CustomError from "../services/error/CustomError.js";
+import VerifyRequest from "../models/VerifyRequest.js";
 
 export const getAllUsers = expressAsyncHandler(async(req, res, next) => {
 
@@ -219,6 +220,33 @@ export const undoAdminRole = expressAsyncHandler(async(req, res, next) => {
     .status(200)
     .json({
         success: true,
+    });
+
+});
+
+export const getAllVerifyRequests = expressAsyncHandler(async(req, res, next) => {
+
+    const verifyRequests = await VerifyRequest.findAll({
+        where: {
+            status: "Pending"
+        },
+        attributes: [
+            "id"
+        ],
+        include: {
+            model: User,
+            attributes: [
+                "id",
+                "username",
+            ]
+        }
+    });
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        verifyRequests: verifyRequests
     });
 
 });

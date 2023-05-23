@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { getAdminAccess, isAuth } from "../middlewares/auth/auth.js";
 import { userQueryMiddleware } from "../middlewares/database/userQueryMiddleware.js";
-import { getAllUsers, getAllPosts, getUserById, blockUserByAdmin, unblockUserByAdmin, assignAdminRole, undoAdminRole } from "../controllers/admin.js";
+import { getAllUsers, getAllPosts, getUserById, blockUserByAdmin, unblockUserByAdmin, assignAdminRole, undoAdminRole, getAllVerifyRequests } from "../controllers/admin.js";
 import { postQueryMiddleware } from "../middlewares/database/postQueryMiddleware.js";
-import { checkUserExists } from "../middlewares/database/db.query.js"
+import { checkUserExists, checkVerifyRequestExists } from "../middlewares/database/db.query.js"
 
 const router = Router();
 
@@ -16,5 +16,6 @@ router.get("/:userId/block", checkUserExists, blockUserByAdmin);
 router.get("/:userId/unblock", checkUserExists, unblockUserByAdmin);
 router.get("/:userId/assign", checkUserExists, assignAdminRole);
 router.get("/:userId/undo", checkUserExists, undoAdminRole);
+router.get("/verify/requests", getAllVerifyRequests);
 
 export default router;
