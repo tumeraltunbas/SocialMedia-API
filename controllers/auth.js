@@ -24,7 +24,14 @@ export const signUp = expressAsyncHandler(async(req, res, next) => {
         gender,
         dateOfBirth
     } = req.body
-
+    
+    const birthYear = new Date(dateOfBirth).getFullYear(); 
+    const thisYear = new Date().getFullYear();
+    
+    if((thisYear - birthYear) < 15){
+        return next(new CustomError(400, "Users under the age of 15 cannot create an account"));
+    }
+    
     if(!validatePassword(password)){
 
         return next(new CustomError(400, "Your password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter and one number"));
