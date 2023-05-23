@@ -23,4 +23,15 @@ app.use(apiLimiter({
 app.use("/api", routes);
 app.use(errorHandler);
 
+app.get("*", (req, res) => {
+
+    return res
+    .status(404)
+    .json({
+        success: false,
+        message: "Route not found"
+    });
+
+});
+
 app.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));
