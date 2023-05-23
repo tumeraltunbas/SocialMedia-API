@@ -174,7 +174,7 @@ export const checkPostBelongsToBlockedUser = expressAsyncHandler(async(req, res,
     });
 
     if(block){
-        return next(new CustomError(400, "You can not access this route because you blocked that user"));
+        return next(new CustomError(400, "You can not access this route due to block"));
     }
 
     next();
