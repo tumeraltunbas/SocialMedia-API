@@ -630,7 +630,11 @@ export const blockUser = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "You can not block yourself"));
     }
     
-    await user.addBlocked(req.user.id);
+    //Block user
+    await Block.create({
+        BlockerId: req.user.id,
+        BlockedId: user.id
+    });
 
     //Unfollow each other
     await Follow.destroy({
