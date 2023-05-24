@@ -630,6 +630,18 @@ export const blockUser = expressAsyncHandler(async(req, res, next) => {
         return next(new CustomError(400, "You can not block yourself"));
     }
     
+    const block = await Block.findOne({
+        where: {
+            BlockerId: req.user.id,
+            BlockedId: user.id
+        },
+        attributes: ["id"]
+    });
+
+    if(block){
+        return next(new CustomError(400, "You already blocked this user"));
+    }
+
     //Block user
     await Block.create({
         BlockerId: req.user.id,
