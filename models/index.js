@@ -39,7 +39,7 @@ User.hasMany(Comment, { foreignKey: "UserId" });
 Comment.belongsTo(User, { onDelete: "CASCADE" });
 
 //Post and Comment ont to many
-Post.hasMany(Comment, { foreignKey: "UserId" });
+Post.hasMany(Comment, { foreignKey: "PostId" });
 Comment.belongsTo(Post, { onDelete: "CASCADE" });
 
 //Block
