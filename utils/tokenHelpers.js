@@ -18,6 +18,7 @@ export const saveJwtToCookie = (user, res) => {
     const {COOKIE_EXPIRES, NODE_ENV} = process.env;
 
     const jwt = user.createJwt();
+    const refreshToken = user.createRefreshToken();
 
     return res
     .status(200)
@@ -26,7 +27,8 @@ export const saveJwtToCookie = (user, res) => {
         httpOnly: NODE_ENV === "development" ? true : false
     })
     .json({
-        success: true
+        success: true,
+        refreshToken: refreshToken
     });
 
 }
