@@ -167,8 +167,17 @@ export const checkPostBelongsToBlockedUser = expressAsyncHandler(async(req, res,
 
     const block = await Block.findOne({
         where: {
-            BlockerId: req.user.id,
-            BlockedId: post.UserId
+            [Op.or]: [
+                {
+                    BlockerId: req.user.id,
+                    BlockedId: post.UserId
+                },
+                {
+                    BlockedId: req.user.id,
+                    BlockerId: post.UserId
+                }
+            ]
+
         },
         attributes: ["id", "BlockedId"]
     });
