@@ -12,6 +12,7 @@ import qrcode from "qrcode";
 import BackupCode from "../models/BackupCode.js";
 import { sendPhoneCodeService } from "../services/sms/sms.service.js";
 import { capitalize } from "../utils/inputHelpers.js";
+import jwt from "jsonwebtoken";
 
 export const signUp = expressAsyncHandler(async(req, res, next) => {
 
@@ -661,5 +662,51 @@ export const deactivateAccount = expressAsyncHandler(async(req, res, next) => {
         success: true,
         message: "Your account has been deactivated"
     });
+
+});
+
+export const refreshJwt = expressAsyncHandler(async(req, res, next) => {
+
+    const { refreshToken } = req.body;
+    const { REFRESH_TOKEN_SECRET } = process.env;
+    const { COOKIE_EXPIRES, NODE_ENV } = process.env;
+
+
+    if(!refreshToken){
+        return next(new CustomError(400, "Refresh token must be provided"));
+    }
+
+    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, async(err, decoded) => {
+
+        if(err){
+            return next(err);
+        }
+
+        if(decoded.id != req.user.id){
+            return next(new CustomError(403, "This refresh token is not belong to you"));
+        }
+
+        const user = await User.findOne({
+            where: {
+                id: req.user.id
+            },
+            attributes: ["id"]
+        })
+
+        const jwt = user.createJwt();
+        
+        return res
+        .status(200)
+        .cookie("jwt", jwt, {
+            maxAge: COOKIE_EXPIRES,
+            httpOnly: NODE_ENV === "development" ? true : false
+        })
+        .json({
+            success: true,
+            message: "JWT has been updated"
+        });
+
+    });
+    
 
 });
