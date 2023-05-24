@@ -258,5 +258,21 @@ User.prototype.createJwt = function(){
 
 }
 
+User.prototype.createRefreshToken = function(){
+
+    const {REFRESH_TOKEN_SECRET, REFRESH_TOKEN_EXPIRES} = process.env;
+
+    const payload = {
+        id: this.id
+    };
+
+    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+        expiresIn: REFRESH_TOKEN_EXPIRES
+    });
+
+    return refreshToken;
+
+}
+
 await User.sync();
 export default User;
