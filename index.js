@@ -28,4 +28,37 @@ app.use(apiLimiter({
 app.use("/api", routes);
 app.use(errorHandler);
 
+app.get("*", (req, res) => {
+
+    return res
+    .status(404)
+    .json({
+        success: false,
+        message: "Route not found"
+    });
+
+});
+
 app.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));
+wss.on("connection", (ws) => {
+
+
+    //http://localhost:8080/api/messages/12345-123456
+    
+    ws.on("message", (message) => {
+
+
+        wss.clients.forEach((client) => {
+
+            if(client !== ws && client.readyState === WebSocket.OPEN){
+                client.send(message.toString());
+            }
+
+        });
+
+    });
+
+
+});
+
+server.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));
