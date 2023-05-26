@@ -8,12 +8,11 @@ import "./models/index.js";
 import cors from "cors";
 import apiLimiter from "express-rate-limit";
 import { WebSocketServer, WebSocket } from "ws";
-import {createServer} from "http2";
+import { isAuth } from "./middlewares/auth/auth.js";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
 
-const server = createServer(app);
 const wss = new WebSocketServer({port: 8081});
 
 app.use(express.json());
@@ -39,7 +38,7 @@ app.get("*", (req, res) => {
 
 });
 
-wss.on("connection", (ws) => {
+wss.on("connection", isAuth, (ws) => {
 
 
     //http://localhost:8080/api/messages/12345-123456
@@ -60,4 +59,4 @@ wss.on("connection", (ws) => {
 
 });
 
-server.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));
+app.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));
