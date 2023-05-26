@@ -8,7 +8,6 @@ import "./models/index.js";
 import cors from "cors";
 import apiLimiter from "express-rate-limit";
 import { WebSocketServer, WebSocket } from "ws";
-import { isAuth } from "./middlewares/auth/auth.js";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
@@ -38,21 +37,14 @@ app.get("*", (req, res) => {
 
 });
 
-wss.on("connection", isAuth, (ws) => {
+wss.on("connection", (ws) => {
 
 
     //http://localhost:8080/api/messages/12345-123456
     
     ws.on("message", (message) => {
 
-
-        wss.clients.forEach((client) => {
-
-            if(client !== ws && client.readyState === WebSocket.OPEN){
-                client.send(message.toString());
-            }
-
-        });
+        
 
     });
 
