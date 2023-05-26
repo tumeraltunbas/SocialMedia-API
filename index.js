@@ -7,13 +7,18 @@ import cookieParser from "cookie-parser";
 import "./models/index.js";
 import cors from "cors";
 import apiLimiter from "express-rate-limit";
+import { WebSocketServer, WebSocket } from "ws";
+import {createServer} from "http2";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
 
+const server = createServer(app);
+const wss = new WebSocketServer({port: 8081});
+
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({credentials: true}));
+app.use(cors({credentials: true, origin: true}));
 app.use(express.static("public"));
 app.use(apiLimiter({
     windowMs: 10 * 60 * 1000,
@@ -22,16 +27,5 @@ app.use(apiLimiter({
 }));
 app.use("/api", routes);
 app.use(errorHandler);
-
-app.get("*", (req, res) => {
-
-    return res
-    .status(404)
-    .json({
-        success: false,
-        message: "Route not found"
-    });
-
-});
 
 app.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));

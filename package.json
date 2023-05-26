@@ -29,7 +29,8 @@
     "randomstring": "^1.2.3",
     "sequelize": "^6.31.1",
     "speakeasy": "^2.0.0",
-    "twilio": "^4.10.0"
+    "twilio": "^4.10.0",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
