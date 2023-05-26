@@ -8,8 +8,12 @@ import User from "../../models/User.js";
 export const isAuth = (req, res, next) => {
 
     const {JWT_SECRET} = process.env;
+    
+    if(!req.cookies.jwt && !req.headers.authorization){
+        return next(new CustomError(400, "Please provide a jsonwebtoken"));
+    }
 
-    const token = req.cookies.jwt;
+    const token = req.cookies.jwt || req.headers.authorization.split(" ")[1];
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
 
