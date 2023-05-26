@@ -6,6 +6,8 @@ import Like from "./Like.js";
 import Follow from "./Follow.js";
 import Comment from "./Comment.js";
 import Block from "./Block.js";
+import Room from "./Room.js";
+import Message from "./Message.js";
 
 //User and BackupCode many to many
 User.belongsToMany(BackupCode, { through: "UserBackupCodes" });
@@ -45,5 +47,13 @@ User.belongsToMany(User, { foreignKey: "BlockedId", through: Block, as: "blocked
 Block.belongsTo(User, { foreignKey: 'BlockerId' });
 Block.belongsTo(User, { foreignKey: 'BlockedId' });
 
+//Room and user many to many
+User.belongsToMany(Room, { through: "UserRooms" });
+Room.belongsToMany(User, { through: "UserRooms" });
+
+//Room and message one to many
+Message.belongsTo(Room, { foreignKey: "RoomId" });
+Room.hasMany(Message, { onDelete: "CASCADE" });
+
 await db.sync();
-export {User, BackupCode, Post, Like, Follow, Comment, Block};
+export {User, BackupCode, Post, Like, Follow, Comment, Block, Room};
