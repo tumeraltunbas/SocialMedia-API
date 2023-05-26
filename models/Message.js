@@ -3,11 +3,11 @@ import db from "../services/database/db.services.js";
 
 const Message = db.define("Message", {
 
-    sender: {
+    senderId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    recipient: {
+    recipientId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
