@@ -10,6 +10,8 @@ import Report from "./Report.js";
 import SavedPost from "./SavedPost.js";
 import FollowRequest from "./FollowRequest.js";
 import VerifyRequest from "./VerifyRequest.js";
+import Room from "./Room.js";
+import Message from "./Message.js";
 
 //User and BackupCode many to many
 User.belongsToMany(BackupCode, { through: "UserBackupCodes" });
@@ -28,11 +30,19 @@ Post.hasMany(Like, { foreignKey: "PostId" });
 Like.belongsTo(Post, { onDelete: "CASCADE" });
 
 //Follow
-User.belongsToMany(User, { foreignKey: "followingId", through: Follow, as: "followers" });
-User.belongsToMany(User, { foreignKey: "followerId", through: Follow, as: "following" });
+User.belongsToMany(User, {
+  foreignKey: "followingId",
+  through: Follow,
+  as: "followers",
+});
+User.belongsToMany(User, {
+  foreignKey: "followerId",
+  through: Follow,
+  as: "following",
+});
 
-Follow.belongsTo(User, { foreignKey: 'followerId' });
-Follow.belongsTo(User, { foreignKey: 'followingId' });
+Follow.belongsTo(User, { foreignKey: "followerId" });
+Follow.belongsTo(User, { foreignKey: "followingId" });
 
 //User and Comment one to many
 User.hasMany(Comment, { foreignKey: "UserId" });
@@ -43,11 +53,19 @@ Post.hasMany(Comment, { foreignKey: "PostId" });
 Comment.belongsTo(Post, { onDelete: "CASCADE" });
 
 //Block
-User.belongsToMany(User, { foreignKey: "BlockerId", through: Block, as: "blocker" });
-User.belongsToMany(User, { foreignKey: "BlockedId", through: Block, as: "blocked" });
+User.belongsToMany(User, {
+  foreignKey: "BlockerId",
+  through: Block,
+  as: "blocker",
+});
+User.belongsToMany(User, {
+  foreignKey: "BlockedId",
+  through: Block,
+  as: "blocked",
+});
 
-Block.belongsTo(User, { foreignKey: 'BlockerId' });
-Block.belongsTo(User, { foreignKey: 'BlockedId' });
+Block.belongsTo(User, { foreignKey: "BlockerId" });
+Block.belongsTo(User, { foreignKey: "BlockedId" });
 
 //User and Report one to many
 User.hasMany(Report, { foreignKey: "UserId" });
@@ -65,15 +83,36 @@ Post.hasMany(SavedPost, { foreignKey: "PostId" });
 SavedPost.belongsTo(Post, { onDelete: "CASCADE" });
 
 //Follow Requests
-User.hasMany(FollowRequest, { foreignKey: "senderId"} );
+User.hasMany(FollowRequest, { foreignKey: "senderId" });
 User.hasMany(FollowRequest, { foreignKey: "receiverId" });
 
-FollowRequest.belongsTo(User, { foreignKey: "senderId", as: "sender"});
+FollowRequest.belongsTo(User, { foreignKey: "senderId", as: "sender" });
 FollowRequest.belongsTo(User, { foreignKey: "receiverId", as: "receiver" });
 
 //VerifyRequest
-User.hasMany(VerifyRequest, { foreignKey: "UserId"} );
+User.hasMany(VerifyRequest, { foreignKey: "UserId" });
 VerifyRequest.belongsTo(User, { onDelete: "CASCADE" });
 
+//Room and user many to many
+User.belongsToMany(Room, { through: "UserRooms" });
+Room.belongsToMany(User, { through: "UserRooms" });
+
+//Room and message one to many
+Message.belongsTo(Room, { foreignKey: "RoomId" });
+Room.hasMany(Message, { onDelete: "CASCADE" });
+
 await db.sync();
-export {User, BackupCode, Post, Like, Follow, Comment, Block, Report, FollowRequest, VerifyRequest};
+export {
+  User,
+  BackupCode,
+  Post,
+  Like,
+  Follow,
+  Comment,
+  Block,
+  Report,
+  FollowRequest,
+  VerifyRequest,
+  Room,
+  Message,
+};
