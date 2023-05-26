@@ -39,7 +39,6 @@ app.get("*", (req, res) => {
 
 });
 
-app.listen(process.env.PORT, () => console.log(`Server is up at ${process.env.PORT}`));
 wss.on("connection", (ws) => {
 
 
