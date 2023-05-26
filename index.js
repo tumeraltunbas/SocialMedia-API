@@ -8,6 +8,7 @@ import "./models/index.js";
 import cors from "cors";
 import { WebSocketServer } from "ws";
 import { sendMessage } from "./services/message/message.services.js";
+import jwt from "jsonwebtoken";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
@@ -23,14 +24,25 @@ app.use(errorHandler);
 
 wss.on("connection", (ws, req) => {
 
-    //http://localhost:8080/api/messages/12345-123456
-    
-    ws.on("message", (message) => {
+    const token = req.headers.authorization.split(" ")[1];
+    const { JWT_SECRET } = process.env;
 
-        sendMessage(req, message.toString());
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+
+        if(err){
+            ws.close();
+        }
+        else{
+            req.user = decoded;
+        }
+
+        ws.on("message", (message) => {
+
+            sendMessage(req, message.toString());
+    
+        });
 
     });
-
 
 });
 
