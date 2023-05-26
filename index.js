@@ -8,6 +8,8 @@ import "./models/index.js";
 import cors from "cors";
 import { WebSocketServer, WebSocket } from "ws";
 import {createServer} from "http2";
+import { sendMessage } from "./services/message/message.services.js";
+import { isAuth } from "./middlewares/auth/auth.js";
 
 dotenv.config({path: "./config/config.env"});
 const app = express();
@@ -22,21 +24,13 @@ app.use(express.static("public"));
 app.use("/api", routes);
 app.use(errorHandler);
 
-wss.on("connection", (ws) => {
-
+wss.on("connection", (ws, req) => {
 
     //http://localhost:8080/api/messages/12345-123456
     
     ws.on("message", (message) => {
 
-
-        wss.clients.forEach((client) => {
-
-            if(client !== ws && client.readyState === WebSocket.OPEN){
-                client.send(message.toString());
-            }
-
-        });
+        sendMessage(req, message.toString());
 
     });
 
