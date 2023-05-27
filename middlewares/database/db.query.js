@@ -290,3 +290,28 @@ export const checkRoomExists = expressAsyncHandler(async(req, res, next) => {
     next();
 
 });
+
+export const checkIsRoomMember = expressAsyncHandler(async(req, res, next) => {
+
+    const {roomId} = req.params;
+
+    const room = await Room.findOne({
+        where: {
+            id: roomId
+        },
+        include: {
+            model: User,
+            attributes: ["id"],
+            where: {
+                id: req.user.id
+            }
+        }
+    });
+
+    if(!room){
+        return next(new CustomError(403, "You are not member of this conversation"));
+    }
+
+    next();
+
+});
