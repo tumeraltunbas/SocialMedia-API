@@ -8,7 +8,6 @@ import reportRoutes from "../routes/report.js"
 import likeRoutes from "../routes/like.js";
 import commentRoutes from "../routes/comment.js";
 import savePostRoutes from "../routes/savedPost.js";
-import messageRoutes from "./message.js";
 
 const router = Router();
 
@@ -21,7 +20,5 @@ router.use("/report", reportRoutes);
 router.use("/like", likeRoutes);
 router.use("/comment", commentRoutes);
 router.use("/save", savePostRoutes);
-router.use("/message", messageRoutes);
-
 
 export default router;
