@@ -3,15 +3,15 @@ import db from "../services/database/db.services.js";
 
 const Message = db.define("Message", {
 
-    senderId: {
+    SenderId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    recipientId: {
+    RecipientId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    roomId: {
+    RoomId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
