@@ -9,6 +9,7 @@ import Block from "../../models/Block.js";
 import Report from "../../models/Report.js";
 import FollowRequest from "../../models/FollowRequest.js";
 import VerifyRequest from "../../models/VerifyRequest.js";
+import Room from "../../models/Room.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
@@ -265,6 +266,25 @@ export const checkVerifyRequestExists = expressAsyncHandler(async(req, res, next
 
     if(!verifyRequest){
         return next(new CustomError(404, "There is no verify request with that id"));
+    }
+
+    next();
+
+});
+
+export const checkRoomExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {roomId} = req.params;
+
+    const room = await Room.findOne({
+        where: {
+            id: roomId
+        },
+        attributes: ["id"]
+    });
+
+    if(!room){
+        return next(new CustomError(404, "There is no conversation with that id"));
     }
 
     next();
