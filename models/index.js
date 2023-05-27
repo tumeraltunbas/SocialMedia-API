@@ -101,6 +101,13 @@ Room.belongsToMany(User, { through: "UserRooms" });
 Message.belongsTo(Room, { foreignKey: "RoomId" });
 Room.hasMany(Message, { onDelete: "CASCADE" });
 
+//User and message
+User.hasMany(Message, { foreignKey: "SenderId" });
+User.hasMany(Message, { foreignKey: "RecipientId" });
+
+Message.belongsTo(User, { onDelete: "CASCADE", foreignKey:"SenderId", as: "sender" });
+Message.belongsTo(User, { onDelete: "CASCADE", foreignKey:"RecipientId", as: "recipient"});
+
 await db.sync();
 export {
   User,
