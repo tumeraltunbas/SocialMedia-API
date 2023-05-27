@@ -28,7 +28,8 @@ export const saveJwtToCookie = (user, res) => {
     })
     .json({
         success: true,
-        refreshToken: refreshToken
+        refreshToken: refreshToken,
+        jwt: jwt
     });
 
 }
