@@ -37,9 +37,9 @@ export const sendMessage = async(req, message) => {
 
     //Create message
     await Message.create({
-        senderId: senderId,
-        recipientId: recipientId,
-        roomId: room.id,
+        SenderId: senderId,
+        RecipientId: recipientId,
+        RoomId: room.id,
         text: message
     });
 
