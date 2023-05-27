@@ -10,6 +10,7 @@ import Report from "../../models/Report.js";
 import FollowRequest from "../../models/FollowRequest.js";
 import VerifyRequest from "../../models/VerifyRequest.js";
 import Room from "../../models/Room.js";
+import Message from "../../models/Message.js";
 
 export const checkUserExists = expressAsyncHandler(async(req, res, next) => {
 
@@ -310,6 +311,25 @@ export const checkIsRoomMember = expressAsyncHandler(async(req, res, next) => {
 
     if(!room){
         return next(new CustomError(403, "You are not member of this conversation"));
+    }
+
+    next();
+
+});
+
+export const checkMessageExists = expressAsyncHandler(async(req, res, next) => {
+
+    const {roomId, messageId} = req.params;
+    
+    const message = await Message.findOne({
+        where: {
+            id: messageId,
+            roomId: roomId,
+        }
+    });
+
+    if(!message){
+        return next(new CustomError(404, "There is no message in this conversation with that id"));
     }
 
     next();
