@@ -15,6 +15,10 @@ const Message = db.define("Message", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    text: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     isVisible: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
