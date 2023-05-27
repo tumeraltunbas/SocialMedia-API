@@ -4,6 +4,7 @@ import Comment from "../../models/Comment.js";
 import CustomError from "../../services/error/CustomError.js";
 import Post from "../../models/Post.js";
 import User from "../../models/User.js";
+import Message from "../../models/Message.js";
 
 export const isAuth = (req, res, next) => {
 
@@ -80,6 +81,30 @@ export const getAdminAccess = expressAsyncHandler(async(req, res, next) => {
 
     if(user.isAdmin != true){
         return next(new CustomError(403, "Only admins can access this route"));
+    }
+
+    next();
+
+});
+
+export const getMessageOwnerAccess = expressAsyncHandler(async(req, res, next) => {
+
+    const {roomId, messageId} = req.params;
+
+    const message = await Message.findOne({
+        where: {
+            id: messageId,
+            RoomId: roomId
+        },
+        include: {
+            model: User,
+            as: "sender",
+            attributes: ["id"]
+        }
+    });
+
+    if(message.sender.id != req.user.id){
+        return next(new CustomError(403, "You are not owner of this message"));
     }
 
     next();
