@@ -44,9 +44,15 @@ wss.on("connection", (ws, req) => {
     const token = req.headers.authorization.split(" ")[1];
     const { JWT_SECRET } = process.env;
 
+    if(!token){
+        ws.send(JSON.stringify({error: "Please provide a token"}));
+        ws.close();
+    }
+
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
 
         if(err){
+            ws.send(JSON.stringify({error: err }));
             ws.close();
         }
         else{
@@ -55,7 +61,7 @@ wss.on("connection", (ws, req) => {
 
         ws.on("message", (message) => {
 
-            sendMessage(req, message.toString());
+            sendMessage(req, message.toString(), ws);
             
         });
 
