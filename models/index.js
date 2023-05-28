@@ -12,6 +12,7 @@ import FollowRequest from "./FollowRequest.js";
 import VerifyRequest from "./VerifyRequest.js";
 import Room from "./Room.js";
 import Message from "./Message.js";
+import { DataTypes } from "sequelize";
 
 //User and BackupCode many to many
 User.belongsToMany(BackupCode, { through: "UserBackupCodes" });
@@ -94,8 +95,17 @@ User.hasMany(VerifyRequest, { foreignKey: "UserId" });
 VerifyRequest.belongsTo(User, { onDelete: "CASCADE" });
 
 //Room and user many to many
-User.belongsToMany(Room, { through: "UserRooms" });
-Room.belongsToMany(User, { through: "UserRooms" });
+
+const UserRooms = db.define("UserRooms", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+});
+
+User.belongsToMany(Room, { through: UserRooms });
+Room.belongsToMany(User, { through: UserRooms });
 
 //Room and message one to many
 Message.belongsTo(Room, { foreignKey: "RoomId" });
